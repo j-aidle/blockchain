@@ -1,5 +1,6 @@
 const actions = {
-  init: "INIT"
+  init: "INIT",
+  addAdmin: 'ADD_ADMIN'
 };
 
 const initialState = {
@@ -7,7 +8,9 @@ const initialState = {
   web3: null,
   accounts: null,
   networkID: null,
-  contract: null
+  contract: null,
+  role: 'unknown',
+  loading: true
 };
 
 const reducer = (state, action) => {
@@ -15,6 +18,8 @@ const reducer = (state, action) => {
   switch (type) {
     case actions.init:
       return { ...state, ...data };
+    case actions.addAdmin:
+      return { state: { ...state, role: 'admin'}}
     default:
       throw new Error("Undefined reducer action type");
   }
