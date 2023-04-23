@@ -52,8 +52,8 @@ const Admin = () => {
   }
 
   const addRecordCallback = useCallback(
-    async (buffer, fileName, patientAddress) => {
-      if (!patientAddress) {
+    async (buffer, fileName, userAddress) => {
+      if (!userAddress) {
         setAlert('Please search for an user first', 'error')
         return
       }
@@ -61,12 +61,12 @@ const Admin = () => {
         const res = await ipfs.add(buffer)
         const ipfsHash = res[0].hash
         if (ipfsHash) {
-          await contract.methods.addRecord(ipfsHash, fileName, patientAddress).send({ from: accounts[0] })
+          await contract.methods.addRecord(ipfsHash, fileName, userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
 
           // refresh records
-          const records = await contract.methods.getRecords(patientAddress).call({ from: accounts[0] })
+          const records = await contract.methods.getRecords(userAddress).call({ from: accounts[0] })
           setRecords(records)
         }
       } catch (err) {
@@ -126,7 +126,7 @@ const Admin = () => {
                         <SearchRoundedIcon style={{ color: 'white' }} />
                       </CustomButton>
                     </Box>
-                    <CustomButton text={'New Record'} handleClick={() => setAddRecord(true)} disabled={!patientExist}>
+                    <CustomButton text={'New Record'} handleClick={() => setAddRecord(true)} disabled={!userExist}>
                       <CloudUploadRoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
                   </Box>
@@ -174,7 +174,7 @@ const Admin = () => {
               )}
               {role === 'user' && (
                 <Box display='flex' justifyContent='center'>
-                  <Typography variant='h5'>Only doctor can access this page</Typography>
+                  <Typography variant='h5'>Only Admin can access this page</Typography>
                 </Box>
               )}
             </>
