@@ -1,25 +1,16 @@
-import { EthProvider } from "./contexts/EthContext";
-import Intro from "./components/Intro/";
-import Setup from "./components/Setup";
-import Demo from "./components/Demo";
-import Footer from "./components/Footer";
+import { EthProvider } from './contexts/EthContext'
+import routes from './routes'
+import { useRoutes } from 'react-router-dom'
+import { AlertProvider } from './contexts/AlertContext/AlertContext'
 
 function App() {
+  const content = useRoutes(routes)
+
   return (
     <EthProvider>
-      <div id="App">
-        <div className="container">
-          <Intro />
-          <hr />
-          <Setup />
-          <hr />
-          <Demo />
-          <hr />
-          <Footer />
-        </div>
-      </div>
+      <AlertProvider>{content}</AlertProvider>
     </EthProvider>
-  );
+  )
 }
 
-export default App;
+export default App
