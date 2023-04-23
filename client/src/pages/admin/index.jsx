@@ -17,26 +17,26 @@ const Admin = () => {
   } = useEth()
   const { setAlert } = useAlert()
 
-  const [patientExist, setPatientExist] = useState(false)
-  const [searchPatientAddress, setSearchPatientAddress] = useState('')
-  const [addPatientAddress, setAddPatientAddress] = useState('')
+  const [userExist, setUserExist] = useState(false)
+  const [searchUserAddress, setSearchUserAddress] = useState('')
+  const [addUserAddress, setAddUserAddress] = useState('')
   const [records, setRecords] = useState([])
   const [addRecord, setAddRecord] = useState(false)
 
-  const searchPatient = async () => {
+  const searchUser = async () => {
     try {
-      if (!/^(0x)?[0-9a-f]{40}$/i.test(searchPatientAddress)) {
+      if (!/^(0x)?[0-9a-f]{40}$/i.test(searchUserAddress)) {
         setAlert('Please enter a valid wallet address', 'error')
         return
       }
-      const patientExists = await contract.methods.getPatientExists(searchPatientAddress).call({ from: accounts[0] })
-      if (patientExists) {
-        const records = await contract.methods.getRecords(searchPatientAddress).call({ from: accounts[0] })
+      const userExists = await contract.methods.getUserExists(searchUserAddress).call({ from: accounts[0] })
+      if (userExists) {
+        const records = await contract.methods.getRecords(searchUserAddress).call({ from: accounts[0] })
         console.log('records :>> ', records)
         setRecords(records)
-        setPatientExist(true)
+        setUserExist(true)
       } else {
-        setAlert('Patient does not exist', 'error')
+        setAlert('User does not exist', 'error')
       }
     } catch (err) {
       console.error(err)
@@ -45,7 +45,7 @@ const Admin = () => {
 
   const registerUser = async () => {
     try {
-      await contract.methods.addUser(addPatientAddress).send({ from: accounts[0] })
+      await contract.methods.addUser(addUserAddress).send({ from: accounts[0] })
     } catch (err) {
       console.error(err)
     }
@@ -54,7 +54,7 @@ const Admin = () => {
   const addRecordCallback = useCallback(
     async (buffer, fileName, patientAddress) => {
       if (!patientAddress) {
-        setAlert('Please search for a patient first', 'error')
+        setAlert('Please search for an user first', 'error')
         return
       }
       try {
@@ -74,7 +74,7 @@ const Admin = () => {
         console.error(err)
       }
     },
-    [addPatientAddress, accounts, contract]
+    [addUserAddress, accounts, contract]
   )
 
   if (loading) {
@@ -98,36 +98,31 @@ const Admin = () => {
                   <Typography variant='h5'>You're not registered, please go to home page</Typography>
                 </Box>
               )}
-              {role === 'patient' && (
-                <Box display='flex' justifyContent='center'>
-                  <Typography variant='h5'>Only doctor can access this page</Typography>
-                </Box>
-              )}
-              {role === 'doctor' && (
+              {role === 'admin' && (
                 <>
                   <Modal open={addRecord} onClose={() => setAddRecord(false)}>
                     <AddRecordModal
                       handleClose={() => setAddRecord(false)}
                       handleUpload={addRecordCallback}
-                      patientAddress={searchPatientAddress}
+                      userAddress={searchUserAddress}
                     />
                   </Modal>
 
-                  <Typography variant='h4'>Patient Records</Typography>
+                  <Typography variant='h4'>User Records</Typography>
                   <Box display='flex' alignItems='center' my={1}>
                     <FormControl fullWidth>
                       <TextField
                         variant='outlined'
-                        placeholder='Search patient by wallet address'
-                        value={searchPatientAddress}
-                        onChange={e => setSearchPatientAddress(e.target.value)}
+                        placeholder='Search user by wallet address'
+                        value={searchUserAddress}
+                        onChange={e => setSearchUserAddress(e.target.value)}
                         InputProps={{ style: { fontSize: '15px' } }}
                         InputLabelProps={{ style: { fontSize: '15px' } }}
                         size='small'
                       />
                     </FormControl>
                     <Box mx={2}>
-                      <CustomButton text={'Search'} handleClick={() => searchPatient()}>
+                      <CustomButton text={'Search'} handleClick={() => searchUser()}>
                         <SearchRoundedIcon style={{ color: 'white' }} />
                       </CustomButton>
                     </Box>
@@ -136,13 +131,13 @@ const Admin = () => {
                     </CustomButton>
                   </Box>
 
-                  {patientExist && records.length === 0 && (
+                  {userExist && records.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
                       <Typography variant='h5'>No records found</Typography>
                     </Box>
                   )}
 
-                  {patientExist && records.length > 0 && (
+                  {userExist && records.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       {records.map((record, index) => (
                         <Box mb={2}>
@@ -156,26 +151,31 @@ const Admin = () => {
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>Register Patient</Typography>
+                  <Typography variant='h4'>Register USer</Typography>
                   <Box display='flex' alignItems='center' my={1}>
                     <FormControl fullWidth>
                       <TextField
                         variant='outlined'
-                        placeholder='Register patient by wallet address'
-                        value={addPatientAddress}
-                        onChange={e => setAddPatientAddress(e.target.value)}
+                        placeholder='Register user by wallet address'
+                        value={addUserAddress}
+                        onChange={e => setAddUserAddress(e.target.value)}
                         InputProps={{ style: { fontSize: '15px' } }}
                         InputLabelProps={{ style: { fontSize: '15px' } }}
                         size='small'
                       />
                     </FormControl>
                     <Box mx={2}>
-                      <CustomButton text={'Register'} handleClick={() => registerPatient()}>
+                      <CustomButton text={'Register'} handleClick={() => registerUser()}>
                         <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                       </CustomButton>
                     </Box>
                   </Box>
                 </>
+              )}
+              {role === 'user' && (
+                <Box display='flex' justifyContent='center'>
+                  <Typography variant='h5'>Only doctor can access this page</Typography>
+                </Box>
               )}
             </>
           )}
