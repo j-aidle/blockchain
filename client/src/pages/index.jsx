@@ -7,7 +7,7 @@ import CustomButton from '../components/CustomButton'
 import { useNavigate } from 'react-router-dom'
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded'
 import { grey } from '@mui/material/colors'
-//import '../App.css'
+import '../App.css'
 
 const Home = () => {
   const {
@@ -39,7 +39,7 @@ const Home = () => {
         return (
           <Box display='flex' flexDirection='column' alignItems='center'>
             <Box mb={2}>
-              <CustomButton text='Doctor Register' handleClick={() => registerAdmin()}>
+              <CustomButton text='Admin Register' handleClick={() => registerAdmin()}>
                 <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
               </CustomButton>
             </Box>
@@ -50,7 +50,7 @@ const Home = () => {
         )
       } else if (role === 'admin') {
         return (
-          <CustomButton text='Doctor Page' handleClick={() => navigate('/admin')}>
+          <CustomButton text='Admin Page' handleClick={() => navigate('/admin')}>
             <LoginRoundedIcon style={{ color: 'white' }} />
           </CustomButton>
         )
@@ -99,11 +99,6 @@ const Home = () => {
                 style={{ height: 20 }}
               ></img>
             </Box>
-            <img
-              src='https://upload.wikimedia.org/wikipedia/commons/1/18/Ipfs-logo-1024-ice-text.png'
-              alt='Ethereum logo vector'
-              style={{ height: 20 }}
-            ></img>
           </Box>
         </Box>
       </Box>

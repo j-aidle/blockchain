@@ -25,7 +25,7 @@ const routes = [
         path: 'admin',
         element: (
           <>
-            <HeaderBar />
+            <HeaderBar/>
             <AlertPopup />
             <Admin />
           </>

@@ -8,7 +8,6 @@ import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import AddRecordModal from './AddRecordModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
-import ipfs from '../../ipfs'
 import Record from '../../components/Record'
 
 const Admin = () => {
@@ -58,17 +57,14 @@ const Admin = () => {
         return
       }
       try {
-        const res = await ipfs.add(buffer)
-        const ipfsHash = res[0].hash
-        if (ipfsHash) {
-          await contract.methods.addRecord(ipfsHash, fileName, userAddress).send({ from: accounts[0] })
+          //await contract.methods.addRecord(ipfsHash, fileName, userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
 
           // refresh records
           const records = await contract.methods.getRecords(userAddress).call({ from: accounts[0] })
           setRecords(records)
-        }
+        
       } catch (err) {
         setAlert('Record upload failed', 'error')
         console.error(err)

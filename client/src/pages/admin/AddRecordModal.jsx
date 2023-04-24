@@ -53,16 +53,6 @@ const AddRecordModal = ({ handleClose, handleUpload, patientAddress }) => {
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
           <Typography variant='h4'>Add Record</Typography>
-          <Box my={2}>
-//            <DropzoneAreaBase
-//              onAdd={fileObjs => handleFileChange(fileObjs[0])}
-//              onDelete={fileObj => {
-//                setFile(null)
-//                setBuffer(null)
-//              }}
-//              onAlert={(message, variant) => setAlert(message, variant)}
-//            />
-          </Box>
           <Box display='flex' justifyContent='space-between' mb={2}>
             {file && <Chip label={file.name} onDelete={() => setFile(null)} style={{ fontSize: '12px' }} />}
             <Box flexGrow={1} />
