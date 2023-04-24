@@ -147,7 +147,7 @@ const Admin = () => {
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>Register USer</Typography>
+                  <Typography variant='h4'>Register User</Typography>
                   <Box display='flex' alignItems='center' my={1}>
                     <FormControl fullWidth>
                       <TextField

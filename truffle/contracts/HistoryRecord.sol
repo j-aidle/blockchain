@@ -4,15 +4,15 @@ contract HistoryRecord {
     
     struct Record{
     	uint id;
-    	string fileName;
     	address adminId;
-    	address userId;    	
+    	address userId;
+    	string nameSubject;
+    	uint value;    	
     	uint256 momentAddition;
     }
     
     struct Admin {
         address id;
-        string nom;
     }
     
     struct User {
@@ -23,18 +23,14 @@ contract HistoryRecord {
         Record[] records;
     }
     
-    /*struct assignatura {
-        uint id;
-        string nom;
-        uint curs;
-    }*/
-    
+   
     mapping (address => Admin) public admins;
     mapping (address => User) public users;
     
     event AdminAdded(address adminId);
     event UserAdded(address userId);
     event RecordAdded(uint id, address adminId, address userId); 
+    event GradeAdded(address userId, string nameSubject, uint value); 
     
     // modifiers
 
@@ -68,16 +64,16 @@ contract HistoryRecord {
 
       emit AdminAdded(msg.sender);
     }
+    
+    function addRecord(uint _id, address _userId, string memory nameSubject, uint value) public senderIsAdmin userExists(_userId) {
+      Record memory record = Record(_id, _userId, msg.sender,nameSubject, value, block.timestamp);
+      users[_userId].records.push(record);
 
-  function addRecord(uint _id, string memory _fileName, address _userId) public senderIsAdmin userExists(_userId) {
-    Record memory record = Record(_id, _fileName, _userId, msg.sender, block.timestamp);
-    users[_userId].records.push(record);
-
-    emit RecordAdded(_id, _userId, msg.sender);
-  } 
-
+      emit RecordAdded(_id, _userId, msg.sender);
+    } 
+  
     function getRecords(address _userId) public view senderExists userExists(_userId) returns (Record[] memory) {
-      return users[_userId].records;
+       return users[_userId].records;
     } 
 
     function getSenderRole() public view returns (string memory) {
