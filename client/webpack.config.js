@@ -2,7 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const EslintWebpackPlugin = require("eslint-webpack-plugin");
 
-const extensions = [".js", ".jsx"];
+const extensions = [".js", ".jsx", ".png"];
 
 module.exports = {
   mode: process.env.NODE_ENV === "production" ? "production" : "development",
@@ -34,6 +34,10 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.(woff|woff2|ttf|eot|png|jpg|svg|gif)$/i,
+        use: ['file-loader']
+      }
     ],
   },
   plugins: [

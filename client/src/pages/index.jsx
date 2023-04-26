@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded'
 import { grey } from '@mui/material/colors'
 import '../App.css'
+import logo from '../assets/education.png'
 
 const Home = () => {
   const {
@@ -81,9 +82,22 @@ const Home = () => {
         height='100vh'
         id='background'
       >
+      <Box
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            top: 0,
+            left: 0,
+            zIndex: -1,
+          }}
+        >
+	<img src={logo} alt='educationLogo' style={{ height: 1024, width: 2048}} />
+        </Box>
         <Box id='home-page-box' display='flex' flexDirection='column' justifyContent='center' alignItems='center' p={5}>
           <Box mt={2} mb={5}>
-            <Typography variant='h4' color='white'>
+            <Typography variant='h2' color='white'>
               Your Record
             </Typography>
           </Box>
