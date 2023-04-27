@@ -1,6 +1,6 @@
 import { Box, Divider, FormControl, Modal, TextField, Typography, Backdrop, CircularProgress } from '@mui/material'
 import React, { useCallback } from 'react'
-import { useState } from 'react'
+import { useState} from 'react'
 import CustomButton from '../../components/CustomButton'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import useEth from '../../contexts/EthContext/useEth'
@@ -51,13 +51,13 @@ const Admin = () => {
   }
 
   const addRecordCallback = useCallback(
-    async (buffer, fileName, userAddress) => {
+    async (buffer, userAddress) => {
       if (!userAddress) {
         setAlert('Please search for an user first', 'error')
         return
       }
       try {
-          //await contract.methods.addRecord(ipfsHash, fileName, userAddress).send({ from: accounts[0] })
+          await contract.methods.addRecord(userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
 
@@ -70,7 +70,7 @@ const Admin = () => {
         console.error(err)
       }
     },
-    [addUserAddress, accounts, contract]
+    [setAlert, contract.methods, accounts]
   )
 
   if (loading) {
@@ -96,6 +96,32 @@ const Admin = () => {
               )}
               {role === 'admin' && (
                 <>
+                  <Box mt={6} mb={4}>
+                    <Divider />
+                  </Box>
+
+                  <Typography variant='h4'>Register User</Typography>
+                  <Box display='flex' alignItems='center' my={1}>
+                    <FormControl fullWidth>
+                      <TextField
+                        variant='outlined'
+                        placeholder='Register user by wallet address'
+                        value={addUserAddress}
+                        onChange={e => setAddUserAddress(e.target.value)}
+                        InputProps={{ style: { fontSize: '15px' } }}
+                        InputLabelProps={{ style: { fontSize: '15px' } }}
+                        size='small'
+                      />
+                    </FormControl>
+                    <Box mx={2}>
+                      <CustomButton text={'Register'} handleClick={() => registerUser()}>
+                        <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                      </CustomButton>
+                    </Box>
+                  </Box>
+                  <Box mt={6} mb={4}>
+                    <Divider />
+                  </Box>
                   <Modal open={addRecord} onClose={() => setAddRecord(false)}>
                     <AddRecordModal
                       handleClose={() => setAddRecord(false)}
@@ -142,30 +168,7 @@ const Admin = () => {
                       ))}
                     </Box>
                   )}
-
-                  <Box mt={6} mb={4}>
-                    <Divider />
-                  </Box>
-
-                  <Typography variant='h4'>Register User</Typography>
-                  <Box display='flex' alignItems='center' my={1}>
-                    <FormControl fullWidth>
-                      <TextField
-                        variant='outlined'
-                        placeholder='Register user by wallet address'
-                        value={addUserAddress}
-                        onChange={e => setAddUserAddress(e.target.value)}
-                        InputProps={{ style: { fontSize: '15px' } }}
-                        InputLabelProps={{ style: { fontSize: '15px' } }}
-                        size='small'
-                      />
-                    </FormControl>
-                    <Box mx={2}>
-                      <CustomButton text={'Register'} handleClick={() => registerUser()}>
-                        <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                      </CustomButton>
-                    </Box>
-                  </Box>
+      
                 </>
               )}
               {role === 'user' && (

@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import CustomButton from '../../components/CustomButton'
-//import { DropzoneAreaBase } from 'material-ui-dropzone'
-import { Box, Chip, IconButton, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Typography, FormControl, TextField } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 
-const AddRecordModal = ({ handleClose, handleUpload, patientAddress }) => {
+const AddRecordModal = ({ handleClose, handleUpload, userAddress }) => {
   const { setAlert } = useAlert()
   const [file, setFile] = useState(null)
   const [buffer, setBuffer] = useState(null)
@@ -54,12 +53,11 @@ const AddRecordModal = ({ handleClose, handleUpload, patientAddress }) => {
         <Box display='flex' flexDirection='column' my={1}>
           <Typography variant='h4'>Add Record</Typography>
           <Box display='flex' justifyContent='space-between' mb={2}>
-            {file && <Chip label={file.name} onDelete={() => setFile(null)} style={{ fontSize: '12px' }} />}
             <Box flexGrow={1} />
             <CustomButton
               text='upload'
-              handleClick={() => handleUpload(buffer, file.name, patientAddress)}
-              disabled={!file || !buffer}
+              handleClick={() => handleUpload(buffer, userAddress)}
+              disabled={!buffer}
             />
           </Box>
         </Box>

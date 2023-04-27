@@ -51,7 +51,7 @@ const User = () => {
               )}
               {role === 'admin' && (
                 <Box display='flex' justifyContent='center'>
-                  <Typography variant='h5'>Only patient can access this page</Typography>
+                  <Typography variant='h5'>Only user can access this page</Typography>
                 </Box>
               )}
               {role === 'user' && (

@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded'
 import { grey } from '@mui/material/colors'
 import '../App.css'
-import logo from '../assets/education.png'
+import logo from '../assets/education.jpg'
 
 const Home = () => {
   const {
@@ -93,7 +93,7 @@ const Home = () => {
             zIndex: -1,
           }}
         >
-	<img src={logo} alt='educationLogo' style={{ height: 1024, width: 2048}} />
+	        <img src={logo} alt='educationLogo' style={{ height: 1024, width: 2048}} />
         </Box>
         <Box id='home-page-box' display='flex' flexDirection='column' justifyContent='center' alignItems='center' p={5}>
           <Box mt={2} mb={5}>

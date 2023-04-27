@@ -29,8 +29,7 @@ contract HistoryRecord {
     
     event AdminAdded(address adminId);
     event UserAdded(address userId);
-    event RecordAdded(uint id, address adminId, address userId); 
-    event GradeAdded(address userId, string nameSubject, uint value); 
+    event RecordAdded(uint id, address adminId, address userId, string nameSubject, uint value); 
     
     // modifiers
 
@@ -54,6 +53,7 @@ contract HistoryRecord {
     function addUser(address _userId) public senderIsAdmin {
       require(users[_userId].id != _userId, "This user already exists.");
       users[_userId].id = _userId;
+      UserIDs.push(_userId);
 
       emit UserAdded(_userId);
     }
@@ -66,10 +66,10 @@ contract HistoryRecord {
     }
     
     function addRecord(uint _id, address _userId, string memory nameSubject, uint value) public senderIsAdmin userExists(_userId) {
-      Record memory record = Record(_id, _userId, msg.sender,nameSubject, value, block.timestamp);
+      Record memory record = Record(_id, _userId, msg.sender,nameSubject,value, block.timestamp);
       users[_userId].records.push(record);
 
-      emit RecordAdded(_id, _userId, msg.sender);
+      emit RecordAdded(_id, _userId, msg.sender, nameSubject, value);
     } 
   
     function getRecords(address _userId) public view senderExists userExists(_userId) returns (Record[] memory) {
