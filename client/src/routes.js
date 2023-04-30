@@ -1,5 +1,4 @@
 // Guards
-import Layout from './components/layouts/Layout'
 import AlertPopup from './components/layouts/AlertPopup'
 
 // Pages

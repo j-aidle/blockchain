@@ -3,12 +3,12 @@ import React from 'react'
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded'
 import { grey } from '@mui/material/colors'
 import moment from 'moment'
-import CloudDownloadRoundedIcon from '@mui/icons-material/CloudDownloadRounded'
 import { useNavigate } from 'react-router-dom'
 
 const Record = ({ record }) => {
-  const [id, name, userId, adminId, timestamp] = record
-  const navigate = useNavigate()
+  const [subject, value, userId,adminId, timestamp] = record
+  useNavigate()
+  console.log(timestamp)
 
   return (
     <Card>
@@ -20,9 +20,25 @@ const Record = ({ record }) => {
           <Grid item xs={3}>
             <Box display='flex' flexDirection='column'>
               <Typography variant='h6' color={grey[600]}>
-                Record name
+                Subject
               </Typography>
-              <Typography variant='h6'>{name}</Typography>
+              <Typography variant='h6'>{subject}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box display='flex' flexDirection='column'>
+              <Typography variant='h6' color={grey[600]}>
+                Grade
+              </Typography>
+              <Typography variant='h6'>{value}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={5}>
+            <Box display='flex' flexDirection='column'>
+              <Typography variant='h6' color={grey[600]}>
+                User
+              </Typography>
+              <Typography variant='h6'>{userId}</Typography>
             </Box>
           </Grid>
           <Grid item xs={5}>
@@ -38,15 +54,8 @@ const Record = ({ record }) => {
               <Typography variant='h6' color={grey[600]}>
                 Created time
               </Typography>
-              <Typography variant='h6'>{moment.unix(timestamp).format('MM-DD-YYYY HH:mm')}</Typography>
+              <Typography variant='h6'>{moment.unix(timestamp).format('DD-MM-YYYY HH:mm')}</Typography>
             </Box>
-          </Grid>
-          <Grid item xs={1}>
-            <a href={`https://med-chain.infura-ipfs.io/ipfs/${id}`} target='_blank' rel='noopener noreferrer'>
-              <IconButton>
-                <CloudDownloadRoundedIcon fontSize='large' />
-              </IconButton>
-            </a>
           </Grid>
         </Grid>
       </CardContent>

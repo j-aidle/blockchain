@@ -1,27 +1,13 @@
 import React, { useState } from 'react'
 import CustomButton from '../../components/CustomButton'
-import { Box, Chip, IconButton, Typography, FormControl, TextField } from '@mui/material'
+import { Box, FormControl, TextField, IconButton, Typography, Divider } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
+import useEth from '../../contexts/EthContext/useEth'
 
-const AddRecordModal = ({ handleClose, handleUpload, userAddress }) => {
+const AddRecordModal = ({ handleClose, handleUpload, subjectName,subjectValue, userAddress }) => {
   const { setAlert } = useAlert()
-  const [file, setFile] = useState(null)
-  const [buffer, setBuffer] = useState(null)
 
-  const handleFileChange = fileObj => {
-    const { file } = fileObj
-    setBuffer(null)
-    setFile(file)
-    console.log('file.name :>> ', file.name)
-
-    const reader = new FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onloadend = () => {
-      const buffer = Buffer.from(reader.result)
-      setBuffer(buffer)
-    }
-  }
 
   return (
     <Box
@@ -52,12 +38,28 @@ const AddRecordModal = ({ handleClose, handleUpload, userAddress }) => {
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
           <Typography variant='h4'>Add Record</Typography>
+          <Box my={2}>
+            <FormControl fullWidth>
+              <TextField
+                variant='outlined'
+                placeholder='Name of the subject'
+                value={subjectName}
+                InputProps={{ style: { fontSize: '15px' } }}
+                InputLabelProps={{ style: { fontSize: '15px' } }}
+                size='small'
+              />
+              <TextField 
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                placeholder='Value of the subject'
+                value={subjectValue}
+              />
+            </FormControl>
+          </Box>
           <Box display='flex' justifyContent='space-between' mb={2}>
             <Box flexGrow={1} />
             <CustomButton
               text='upload'
-              handleClick={() => handleUpload(buffer, userAddress)}
-              disabled={!buffer}
+              handleClick={() => handleUpload(subjectName,subjectValue, userAddress)}
             />
           </Box>
         </Box>

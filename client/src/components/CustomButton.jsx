@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 import { grey, teal } from '@mui/material/colors'
 
 const CustomButton = ({ text, handleClick, disabled = false, children }) => {

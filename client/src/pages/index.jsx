@@ -1,12 +1,10 @@
-import { Box, Typography, Backdrop, CircularProgress, Divider } from '@mui/material'
+import { Box, Typography, Backdrop, CircularProgress } from '@mui/material'
 import React from 'react'
-import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded'
 import useEth from '../contexts/EthContext/useEth'
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded'
 import CustomButton from '../components/CustomButton'
 import { useNavigate } from 'react-router-dom'
 import LoginRoundedIcon from '@mui/icons-material/LoginRounded'
-import { grey } from '@mui/material/colors'
 import '../App.css'
 import logo from '../assets/education.jpg'
 

@@ -3,14 +3,13 @@ pragma solidity >0.8.0;
 contract HistoryRecord {
     
     struct Record{
-    	uint id;
-    	address adminId;
-    	address userId;
-    	string nameSubject;
-    	uint value;    	
+      string subjectName;
+      uint subjectValue; 
+      address userId;
+      address adminId;
     	uint256 momentAddition;
-    }
-    
+    }  
+        
     struct Admin {
         address id;
     }
@@ -26,10 +25,10 @@ contract HistoryRecord {
    
     mapping (address => Admin) public admins;
     mapping (address => User) public users;
-    
+ 
     event AdminAdded(address adminId);
     event UserAdded(address userId);
-    event RecordAdded(uint id, address adminId, address userId, string nameSubject, uint value); 
+    event RecordAdded(string subjectName, uint subjectValue, address userId, address adminId); 
     
     // modifiers
 
@@ -53,7 +52,6 @@ contract HistoryRecord {
     function addUser(address _userId) public senderIsAdmin {
       require(users[_userId].id != _userId, "This user already exists.");
       users[_userId].id = _userId;
-      UserIDs.push(_userId);
 
       emit UserAdded(_userId);
     }
@@ -65,11 +63,11 @@ contract HistoryRecord {
       emit AdminAdded(msg.sender);
     }
     
-    function addRecord(uint _id, address _userId, string memory nameSubject, uint value) public senderIsAdmin userExists(_userId) {
-      Record memory record = Record(_id, _userId, msg.sender,nameSubject,value, block.timestamp);
+    function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
+      Record memory record = Record(_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
       users[_userId].records.push(record);
 
-      emit RecordAdded(_id, _userId, msg.sender, nameSubject, value);
+      emit RecordAdded(_subjectName, _subjectValue, _userId, msg.sender);
     } 
   
     function getRecords(address _userId) public view senderExists userExists(_userId) returns (Record[] memory) {

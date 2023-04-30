@@ -10,6 +10,7 @@ import AddRecordModal from './AddRecordModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 
+
 const Admin = () => {
   const {
     state: { contract, accounts, role, loading },
@@ -21,6 +22,9 @@ const Admin = () => {
   const [addUserAddress, setAddUserAddress] = useState('')
   const [records, setRecords] = useState([])
   const [addRecord, setAddRecord] = useState(false)
+  const [userAddr, setUserAddr] = useState('')
+  const [subjectName, setSubjectName] = useState('')
+  const [subjectValue, setSubjectValue] = useState('')
 
   const searchUser = async () => {
     try {
@@ -50,27 +54,49 @@ const Admin = () => {
     }
   }
 
+  const rec = async () => {
+    if (!userAddr) {
+      setAlert('Please search for a patient first', 'error')
+      return
+    }
+    try {
+        await contract.methods.addRecord(subjectName,subjectValue, userAddr).send({ from: accounts[0] })
+        setAlert('New record uploaded', 'success')
+        setAddRecord(false)
+
+        // refresh records
+        const records = await contract.methods.getRecords(userAddr).call({ from: accounts[0] })
+        setRecords(records)
+    } catch (err) {
+      setAlert('Record upload failed', 'error')
+      console.log('subject :>> ',subjectName)
+      console.log('value :>> ', subjectValue)
+      console.error(err)
+    }
+  }
+
   const addRecordCallback = useCallback(
-    async (buffer, userAddress) => {
+    async (subjectName, subjectValue, userAddress) => {
       if (!userAddress) {
-        setAlert('Please search for an user first', 'error')
+        setAlert('Please search for a patient first', 'error')
         return
       }
       try {
-          await contract.methods.addRecord(userAddress).send({ from: accounts[0] })
+          await contract.methods.addRecord(subjectName,subjectValue, userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
 
           // refresh records
           const records = await contract.methods.getRecords(userAddress).call({ from: accounts[0] })
           setRecords(records)
-        
       } catch (err) {
         setAlert('Record upload failed', 'error')
+        console.log('subject :>> ',subjectName)
+        console.log('value :>> ', subjectValue)
         console.error(err)
       }
     },
-    [setAlert, contract.methods, accounts]
+    [setAlert, contract, accounts]
   )
 
   if (loading) {
@@ -119,9 +145,50 @@ const Admin = () => {
                       </CustomButton>
                     </Box>
                   </Box>
+
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
+
+                  <Typography variant='h4'>add rec</Typography>
+                  <Box display='flex' alignItems='center' my={1}>
+                    <FormControl fullWidth>
+                      <TextField
+                        variant='outlined'
+                        placeholder='Search user by wallet address'
+                        value={userAddr}
+                        onChange={e => setUserAddr(e.target.value)}
+                        InputProps={{ style: { fontSize: '15px' } }}
+                        InputLabelProps={{ style: { fontSize: '15px' } }}
+                        size='small'
+                      />
+                      <TextField
+                        variant='outlined'
+                        placeholder='Name of the subject'
+                        value={subjectName}
+                        onChange={e => setSubjectName(e.target.value)}
+                        InputProps={{ style: { fontSize: '15px' } }}
+                        InputLabelProps={{ style: { fontSize: '15px' } }}
+                        size='small'
+                      />
+                      <TextField 
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        placeholder='Value of the subject'
+                        value={subjectValue}
+                        onChange={e => setSubjectValue(e.target.value)}
+                      />
+                    </FormControl>
+                    <Box mx={2}>
+                      <CustomButton text={'Register'} handleClick={() => rec()}>
+                        <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                      </CustomButton>
+                    </Box>
+                  </Box>
+
+                  <Box mt={6} mb={4}>
+                    <Divider />
+                  </Box>
+           
                   <Modal open={addRecord} onClose={() => setAddRecord(false)}>
                     <AddRecordModal
                       handleClose={() => setAddRecord(false)}
