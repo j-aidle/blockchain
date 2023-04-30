@@ -36,15 +36,7 @@ const Record = ({ record }) => {
           <Grid item xs={5}>
             <Box display='flex' flexDirection='column'>
               <Typography variant='h6' color={grey[600]}>
-                User
-              </Typography>
-              <Typography variant='h6'>{userId}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={5}>
-            <Box display='flex' flexDirection='column'>
-              <Typography variant='h6' color={grey[600]}>
-                Admin
+                Created By
               </Typography>
               <Typography variant='h6'>{adminId}</Typography>
             </Box>
