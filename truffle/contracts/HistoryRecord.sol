@@ -3,6 +3,7 @@ pragma solidity >0.8.0;
 contract HistoryRecord {
     
     struct Record{
+      uint id;
       string subjectName;
       uint subjectValue; 
       address userId;
@@ -64,7 +65,7 @@ contract HistoryRecord {
     }
     
     function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
-      Record memory record = Record(_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
+      Record memory record = Record(getCountRecords(_userId),_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
       users[_userId].records.push(record);
 
       emit RecordAdded(_subjectName, _subjectValue, _userId, msg.sender);
@@ -86,6 +87,10 @@ contract HistoryRecord {
 
     function getUserExists(address _userId) public view senderIsAdmin returns (bool) {
       return users[_userId].id == _userId;
+    }
+
+    function getCountRecords(address _userId) public view returns(uint count) {
+        return users[_userId].records.length+1;
     }
 
 }

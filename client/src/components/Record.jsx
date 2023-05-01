@@ -1,4 +1,4 @@
-import { Card, CardContent, IconButton, Typography, Grid, Box } from '@mui/material'
+import { Card, CardContent, Typography, Grid, Box } from '@mui/material'
 import React from 'react'
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded'
 import { grey } from '@mui/material/colors'
@@ -6,9 +6,8 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
 const Record = ({ record }) => {
-  const [subject, value, userId,adminId, timestamp] = record
+  const [id,subject, value, userId,adminId, timestamp] = record
   useNavigate()
-  console.log(timestamp)
 
   return (
     <Card>
@@ -16,8 +15,9 @@ const Record = ({ record }) => {
         <Grid container spacing={2}>
           <Grid item xs={1}>
             <DescriptionRoundedIcon style={{ fontSize: 40, color: grey[700] }} />
+            <Typography variant='h6'>{id}</Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Box display='flex' flexDirection='column'>
               <Typography variant='h6' color={grey[600]}>
                 Subject
@@ -25,7 +25,7 @@ const Record = ({ record }) => {
               <Typography variant='h6'>{subject}</Typography>
             </Box>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={2}>
             <Box display='flex' flexDirection='column'>
               <Typography variant='h6' color={grey[600]}>
                 Grade

@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import CustomButton from '../../components/CustomButton'
-import { Box, FormControl, TextField, IconButton, Typography, Divider } from '@mui/material'
+import { Box, FormControl, TextField, IconButton, Typography } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import useEth from '../../contexts/EthContext/useEth'
 
-const AddRecordModal = ({ handleClose, handleUpload, subjectName,subjectValue, userAddress }) => {
+const AddRecordModal = ({ handleClose, handleUpload, userAddress }) => {
   const { setAlert } = useAlert()
-
+  const [subjectName, setSubjectName] = useState('')
+  const [subjectValue, setSubjectValue] = useState('')
 
   return (
     <Box
@@ -44,6 +45,7 @@ const AddRecordModal = ({ handleClose, handleUpload, subjectName,subjectValue, u
                 variant='outlined'
                 placeholder='Name of the subject'
                 value={subjectName}
+                onChange={e => setSubjectName(e.target.value)}
                 InputProps={{ style: { fontSize: '15px' } }}
                 InputLabelProps={{ style: { fontSize: '15px' } }}
                 size='small'
@@ -52,6 +54,7 @@ const AddRecordModal = ({ handleClose, handleUpload, subjectName,subjectValue, u
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 placeholder='Value of the subject'
                 value={subjectValue}
+                onChange={e => setSubjectValue(e.target.value)}
               />
             </FormControl>
           </Box>

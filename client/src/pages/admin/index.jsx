@@ -82,6 +82,9 @@ const Admin = () => {
         return
       }
       try {
+        console.log('eo')
+        console.log('subject :>> ',subjectName)
+        console.log('value :>> ', subjectValue)
           await contract.methods.addRecord(subjectName,subjectValue, userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
@@ -194,6 +197,8 @@ const Admin = () => {
                       handleClose={() => setAddRecord(false)}
                       handleUpload={addRecordCallback}
                       userAddress={searchUserAddress}
+                      subjectName={subjectName}
+                      subjectValue={subjectValue}
                     />
                   </Modal>
 
@@ -228,7 +233,7 @@ const Admin = () => {
 
                   {userExist && records.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
-                      {records.map((record, index) => (
+                      {records.map((record,index) => (
                         <Box mb={2}>
                           <Record key={index} record={record} />
                         </Box>
