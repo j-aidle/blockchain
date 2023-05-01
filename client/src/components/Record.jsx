@@ -15,7 +15,6 @@ const Record = ({ record }) => {
         <Grid container spacing={2}>
           <Grid item xs={1}>
             <DescriptionRoundedIcon style={{ fontSize: 40, color: grey[700] }} />
-            <Typography variant='h6'>{id}</Typography>
           </Grid>
           <Grid item xs={2}>
             <Box display='flex' flexDirection='column'>
