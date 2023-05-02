@@ -8,6 +8,7 @@ import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import AddRecordModal from './AddRecordModal'
 import AddProfessorModal from './AddProfessorModal'
+import AddSubjectModal from './AddSubjectModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 
@@ -24,12 +25,35 @@ const Admin = () => {
   const [records, setRecords] = useState([])
   const [addRecord, setAddRecord] = useState(false)
   const [addProfessorRecord, setAddProfessorRecord] = useState(false)
+  const [addProfessorAddress] = useState('')
+  const [addProfessorName] = useState('')
+  const [addSubjectRecord, setAddSubjectRecord] = useState(false)
+  const [addSubjectName] = useState('')
+
+  /* to delete */
   const [userAddr, setUserAddr] = useState('')
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
-  const [addProfessorAddress, setProfessorAddress] = useState('')
-  const [addProfessorName, setProfessorName] = useState('')
+  const rec = async () => {
+    if (!userAddr) {
+      setAlert('Please search for a patient first', 'error')
+      return
+    }
+    try {
+        await contract.methods.addRecord(subjectName,subjectValue, userAddr).send({ from: accounts[0] })
+        setAlert('New record uploaded', 'success')
+        setAddRecord(false)
 
+        // refresh records
+        const records = await contract.methods.getRecords(userAddr).call({ from: accounts[0] })
+        setRecords(records)
+    } catch (err) {
+      setAlert('Record upload failed', 'error')
+      console.log('subject :>> ',subjectName)
+      console.log('value :>> ', subjectValue)
+      console.error(err)
+    }
+  }
 
   const searchUser = async () => {
     try {
@@ -68,24 +92,12 @@ const Admin = () => {
     }
   }
 
-  const rec = async () => {
-    if (!userAddr) {
-      setAlert('Please search for a patient first', 'error')
-      return
-    }
+  const registerSubject = async () => {
     try {
-        await contract.methods.addRecord(subjectName,subjectValue, userAddr).send({ from: accounts[0] })
-        setAlert('New record uploaded', 'success')
-        setAddRecord(false)
-
-        // refresh records
-        const records = await contract.methods.getRecords(userAddr).call({ from: accounts[0] })
-        setRecords(records)
-    } catch (err) {
-      setAlert('Record upload failed', 'error')
-      console.log('subject :>> ',subjectName)
-      console.log('value :>> ', subjectValue)
-      console.error(err)
+        await contract.methods.addSubject(addSubjectName).send({ from: accounts[0]})
+        setAddSubjectRecord(false)
+    } catch(err) {
+      console.log(err);
     }
   }
 
@@ -173,7 +185,23 @@ const Admin = () => {
                       addProfessorName={addProfessorName}
                     />
                     </Modal>
-                    <CustomButton text={'New Record'} handleClick={() => setAddProfessorRecord(true)}>
+                    <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
+                      <CloudUploadRoundedIcon style={{ color: 'white' }} />
+                    </CustomButton>
+
+                  <Box mt={6} mb={4}>
+                    <Divider />
+                  </Box>
+
+                  <Typography variant='h4'>Add Subject</Typography>
+                  <Modal open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
+                    <AddSubjectModal
+                      handleClose={() => setAddSubjectRecord(false)}
+                      handleUpload={registerSubject}
+                      addSubjectName={addSubjectName}
+                    />
+                    </Modal>
+                    <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
                       <CloudUploadRoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
 
