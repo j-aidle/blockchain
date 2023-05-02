@@ -22,13 +22,53 @@ contract HistoryRecord {
         uint age;
         Record[] records;
     }
+
+    struct Professor {
+      address id;
+      string name;
+    }
+
+    struct Subject {
+      uint id;
+      string name;
+    }
+
+    struct ProfessorsStudents {
+      uint id;
+      address professorId;
+      address studentId;
+    }
+    struct ProfessorsSubjects {
+      uint id;
+      address professorId;
+      address subjectId;
+    }
+    struct StudentsSubjects {
+      uint id;
+      address studentId;
+      address subjectId;
+    }
+
+    struct Grades {
+      uint id;
+      address studentId;
+      address subjectId;
+      uint value;
+    }
     
    
     mapping (address => Admin) public admins;
     mapping (address => User) public users;
- 
+    mapping (address => Professor) public professors;
+    mapping (uint => Subject) public subjects;
+    mapping (uint => ProfessorsStudents) public professorsStudents;
+    mapping (uint => ProfessorsSubjects) public professorsSubjects;
+    mapping (uint => StudentsSubjects) public studentsSubjects;
+    mapping (uint => Grades) public grades;
+
     event AdminAdded(address adminId);
     event UserAdded(address userId);
+    event ProfessorAdded(address professorId);
     event RecordAdded(string subjectName, uint subjectValue, address userId, address adminId); 
     
     // modifiers
@@ -63,6 +103,14 @@ contract HistoryRecord {
 
       emit AdminAdded(msg.sender);
     }
+
+    function addProfessor(address _profId, string memory _nameProfessor) public {
+      require(professors[_profId].id != _profId, "This professor already exists.");
+      professors[_profId].id = _profId;
+      professors[_profId].name = _nameProfessor;
+
+      emit ProfessorAdded(_profId);
+    }
     
     function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
       Record memory record = Record(getCountRecords(_userId),_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
@@ -80,6 +128,8 @@ contract HistoryRecord {
         return "admin";
       } else if (users[msg.sender].id == msg.sender) {
         return "user";
+      } else if (professors[msg.sender].id == msg.sender) {
+        return "professor";
       } else {
         return "unknown";
       }
@@ -90,7 +140,7 @@ contract HistoryRecord {
     }
 
     function getCountRecords(address _userId) public view returns(uint count) {
-        return users[_userId].records.length+1;
+        return users[_userId].records.length;
     }
 
 }

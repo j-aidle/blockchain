@@ -59,6 +59,12 @@ const Home = () => {
             <LoginRoundedIcon style={{ color: 'white' }} />
           </CustomButton>
         )
+      } else if (role === 'professor') {
+        return (
+          <CustomButton text='Professor Page' handleClick={() => navigate('/professor')}>
+            <LoginRoundedIcon style={{ color: 'white' }} />
+          </CustomButton>
+        )
       } 
     }
   }

@@ -7,6 +7,7 @@ import useEth from '../../contexts/EthContext/useEth'
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import AddRecordModal from './AddRecordModal'
+import AddProfessorModal from './AddProfessorModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 
@@ -22,9 +23,13 @@ const Admin = () => {
   const [addUserAddress, setAddUserAddress] = useState('')
   const [records, setRecords] = useState([])
   const [addRecord, setAddRecord] = useState(false)
+  const [addProfessorRecord, setAddProfessorRecord] = useState(false)
   const [userAddr, setUserAddr] = useState('')
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
+  const [addProfessorAddress, setProfessorAddress] = useState('')
+  const [addProfessorName, setProfessorName] = useState('')
+
 
   const searchUser = async () => {
     try {
@@ -51,6 +56,15 @@ const Admin = () => {
       await contract.methods.addUser(addUserAddress).send({ from: accounts[0] })
     } catch (err) {
       console.error(err)
+    }
+  }
+
+  const registerProfessor = async (addProfessorAddress,addProfessorName) => {
+    try {
+        await contract.methods.addProfessor(addProfessorAddress,addProfessorName).send({ from: accounts[0]})
+        setAddProfessorRecord(false)
+    } catch(err) {
+      console.log(err);
     }
   }
 
@@ -82,9 +96,6 @@ const Admin = () => {
         return
       }
       try {
-        console.log('eo')
-        console.log('subject :>> ',subjectName)
-        console.log('value :>> ', subjectValue)
           await contract.methods.addRecord(subjectName,subjectValue, userAddress).send({ from: accounts[0] })
           setAlert('New record uploaded', 'success')
           setAddRecord(false)
@@ -148,6 +159,23 @@ const Admin = () => {
                       </CustomButton>
                     </Box>
                   </Box>
+
+                  <Box mt={6} mb={4}>
+                    <Divider />
+                  </Box>
+
+                  <Typography variant='h4'>Register Professor</Typography>
+                  <Modal open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
+                    <AddProfessorModal
+                      handleClose={() => setAddProfessorRecord(false)}
+                      handleUpload={registerProfessor}
+                      addProfessorAddress={addProfessorAddress}
+                      addProfessorName={addProfessorName}
+                    />
+                    </Modal>
+                    <CustomButton text={'New Record'} handleClick={() => setAddProfessorRecord(true)}>
+                      <CloudUploadRoundedIcon style={{ color: 'white' }} />
+                    </CustomButton>
 
                   <Box mt={6} mb={4}>
                     <Divider />
@@ -234,7 +262,7 @@ const Admin = () => {
                   {userExist && records.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       {records.map((record,index) => (
-                        <Box mb={2}>
+                        <Box mb={2} key={index}>
                           <Record key={index} record={record} />
                         </Box>
                       ))}

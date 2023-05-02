@@ -5,6 +5,7 @@ import AlertPopup from './components/layouts/AlertPopup'
 import Home from './pages'
 import Admin from './pages/admin'
 import User from './pages/user'
+import Professor from './pages/professor'
 import HeaderBar from './components/layouts/Layout'
 
 const routes = [
@@ -37,6 +38,16 @@ const routes = [
             <HeaderBar />
             <AlertPopup />
             <User />
+          </>
+        ),
+      },
+      {
+        path: 'professor',
+        element: (
+          <>
+            <HeaderBar />
+            <AlertPopup />
+            <Professor />
           </>
         ),
       },
