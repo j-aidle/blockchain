@@ -5,7 +5,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import useEth from '../../contexts/EthContext/useEth'
 
-const AddProfessorModal = ({ handleClose, handleUpload }) => {
+const AddProfessorModal = ({ handleCloseProfessor, handleUploadProfessor }) => {
   const { setAlert } = useAlert()
   const [addProfessorAddress, setProfessorAddress] = useState('')
   const [addProfessorName, setProfessorName] = useState('')
@@ -33,7 +33,7 @@ const AddProfessorModal = ({ handleClose, handleUpload }) => {
         position='relative'
       >
         <Box position='absolute' sx={{ top: 5, right: 5 }}>
-          <IconButton onClick={() => handleClose()}>
+          <IconButton onClick={() => handleCloseProfessor()}>
             <CloseRoundedIcon />
           </IconButton>
         </Box>
@@ -43,7 +43,7 @@ const AddProfessorModal = ({ handleClose, handleUpload }) => {
             <FormControl fullWidth>
               <TextField
                 variant='outlined'
-                placeholder='Name of the subject'
+                placeholder='Address of the Professor'
                 value={addProfessorAddress}
                 onChange={e => setProfessorAddress(e.target.value)}
                 InputProps={{ style: { fontSize: '15px' } }}
@@ -52,7 +52,7 @@ const AddProfessorModal = ({ handleClose, handleUpload }) => {
               />
               <TextField
                 variant='outlined'
-                placeholder='Name of the subject'
+                placeholder='Name of the Professor'
                 value={addProfessorName}
                 onChange={e => setProfessorName(e.target.value)}
                 InputProps={{ style: { fontSize: '15px' } }}
@@ -65,7 +65,7 @@ const AddProfessorModal = ({ handleClose, handleUpload }) => {
             <Box flexGrow={1} />
             <CustomButton
               text='upload'
-              handleClick={() => handleUpload(addProfessorAddress,addProfessorName)}
+              handleClick={() => handleUploadProfessor(addProfessorAddress,addProfessorName)}
             />
           </Box>
         </Box>

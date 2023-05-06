@@ -1,5 +1,5 @@
-import { Box, Divider, FormControl, Modal, TextField, Typography, Backdrop, CircularProgress } from '@mui/material'
-import React, { useCallback } from 'react'
+import { Box, Divider, FormControl, Modal, ListItemText, TextField, Typography, Backdrop, CircularProgress, Menu, MenuItem, InputLabel, Select } from '@mui/material'
+import React, { useCallback, useEffect } from 'react'
 import { useState} from 'react'
 import CustomButton from '../../components/CustomButton'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
@@ -29,7 +29,11 @@ const Admin = () => {
   const [addProfessorName] = useState('')
   const [addSubjectRecord, setAddSubjectRecord] = useState(false)
   const [addSubjectName] = useState('')
-
+  const [subjects, setSubjects] = useState([])
+  const [subjectList, setSubjectList]= useState(false)
+  const [professors, setProfessors] = useState([])
+  const [professorList, setProfessorList]= useState(false)
+  
   /* to delete */
   const [userAddr, setUserAddr] = useState('')
   const [subjectName, setSubjectName] = useState('')
@@ -45,7 +49,7 @@ const Admin = () => {
         setAddRecord(false)
 
         // refresh records
-        const records = await contract.methods.getRecords(userAddr).call({ from: accounts[0] })
+        const records = await contract.methods.getRecords(userAddr)
         setRecords(records)
     } catch (err) {
       setAlert('Record upload failed', 'error')
@@ -54,6 +58,7 @@ const Admin = () => {
       console.error(err)
     }
   }
+
 
   const searchUser = async () => {
     try {
@@ -77,6 +82,7 @@ const Admin = () => {
 
   const registerUser = async () => {
     try {
+      console.log(addUserAddress)
       await contract.methods.addUser(addUserAddress).send({ from: accounts[0] })
     } catch (err) {
       console.error(err)
@@ -92,14 +98,36 @@ const Admin = () => {
     }
   }
 
-  const registerSubject = async () => {
+  const registerSubject  = async (addSubjectName) => {
+    let dupl = false
+    for(let i=0; i < subjects.length; i++) {
+      if(subjects[i].name === addSubjectName){
+        dupl = true
+      }
+    }
+    if(dupl){
+      setAlert('Duplicated subject', 'error')
+      return
+    }
     try {
         await contract.methods.addSubject(addSubjectName).send({ from: accounts[0]})
         setAddSubjectRecord(false)
-    } catch(err) {
+      } catch(err) {
       console.log(err);
     }
   }
+
+  const getSubjects = async () => {
+    try {
+      const subj = await contract.methods.getSubjects().call({ from: accounts[0] })
+      setSubjects(subj)
+      //console.log('subjects', subj)
+
+      } catch(err) {
+      console.log(err);
+    }
+  }
+
 
   const addRecordCallback = useCallback(
     async (subjectName, subjectValue, userAddress) => {
@@ -124,6 +152,11 @@ const Admin = () => {
     },
     [setAlert, contract, accounts]
   )
+  useEffect(() => {
+    getSubjects();
+  })
+
+  
 
   if (loading) {
     return (
@@ -177,16 +210,16 @@ const Admin = () => {
                   </Box>
 
                   <Typography variant='h4'>Register Professor</Typography>
-                  <Modal open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
+                  <Modal key="professorModal" open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
                     <AddProfessorModal
-                      handleClose={() => setAddProfessorRecord(false)}
-                      handleUpload={registerProfessor}
+                      handleCloseProfessor={() => setAddProfessorRecord(false)}
+                      handleUploadProfessor={registerProfessor}
                       addProfessorAddress={addProfessorAddress}
                       addProfessorName={addProfessorName}
                     />
                     </Modal>
                     <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
-                      <CloudUploadRoundedIcon style={{ color: 'white' }} />
+                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
 
                   <Box mt={6} mb={4}>
@@ -194,17 +227,62 @@ const Admin = () => {
                   </Box>
 
                   <Typography variant='h4'>Add Subject</Typography>
-                  <Modal open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
+                  <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
                     <AddSubjectModal
-                      handleClose={() => setAddSubjectRecord(false)}
-                      handleUpload={registerSubject}
+                      handleCloseSubject={() => setAddSubjectRecord(false)}
+                      handleUploadSubject={registerSubject}
                       addSubjectName={addSubjectName}
                     />
                     </Modal>
                     <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
-                      <CloudUploadRoundedIcon style={{ color: 'white' }} />
+                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
-
+                    <div>
+                    <Menu
+                        id="subjectsMenu"
+                        aria-labelledby="subjectsMenu"
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'left',
+                        }}
+                        open={subjectList} onClose={() => setSubjectList(false)}
+                      >
+                        {subjects.map((subject, index) => (
+                                  <MenuItem
+                                    key={index}
+                                    disabled={index === 0}
+                                  >
+                                    
+                                    <ListItemText key={subject.id}>{subject}</ListItemText>
+                                  </MenuItem>
+                                ))}
+                      </Menu>
+                      <CustomButton text={'Subjects List'} handleClick={() => getSubjects()}>
+                        <SearchRoundedIcon style={{ color: 'white' }} />
+                      </CustomButton>
+                      <FormControl fullWidth>
+                        <InputLabel id="subjectsList">Subjects</InputLabel>
+                        <Select
+                          labelId="demo-subjectsList"
+                          id="demo-simple-select"
+                          value={0}
+                          label="Subject"
+                          onLoad={() => getSubjects()}
+                          //onChange={handleChange}
+                        >
+                          {
+                            subjects.map((subject, index) => (
+                              <MenuItem value={subject.id}>{subject.name}</MenuItem>                              
+                            )
+                          )}
+                        </Select>
+                      </FormControl>
+                      
+                    </div>
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
@@ -248,7 +326,7 @@ const Admin = () => {
                     <Divider />
                   </Box>
            
-                  <Modal open={addRecord} onClose={() => setAddRecord(false)}>
+                  <Modal key="recordModal" open={addRecord} onClose={() => setAddRecord(false)}>
                     <AddRecordModal
                       handleClose={() => setAddRecord(false)}
                       handleUpload={addRecordCallback}

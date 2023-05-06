@@ -5,7 +5,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import useEth from '../../contexts/EthContext/useEth'
 
-const AddSubjectModal = ({ handleClose, handleUpload }) => {
+const AddSubjectModal = ({ handleCloseSubject, handleUploadSubject }) => {
   const { setAlert } = useAlert()
   const [addSubjectName, setSubjectName] = useState('')
 
@@ -32,7 +32,7 @@ const AddSubjectModal = ({ handleClose, handleUpload }) => {
         position='relative'
       >
         <Box position='absolute' sx={{ top: 5, right: 5 }}>
-          <IconButton onClick={() => handleClose()}>
+          <IconButton onClick={() => handleCloseSubject()}>
             <CloseRoundedIcon />
           </IconButton>
         </Box>
@@ -55,7 +55,7 @@ const AddSubjectModal = ({ handleClose, handleUpload }) => {
             <Box flexGrow={1} />
             <CustomButton
               text='upload'
-              handleClick={() => handleUpload(addSubjectName)}
+              handleClick={() => handleUploadSubject(addSubjectName)}
             />
           </Box>
         </Box>

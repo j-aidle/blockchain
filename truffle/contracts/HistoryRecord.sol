@@ -32,6 +32,7 @@ contract HistoryRecord {
   }
 
   struct Subject {
+    uint id;
     string name;
   }
 
@@ -63,7 +64,8 @@ contract HistoryRecord {
   mapping (address => Admin) public admins;
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
-  mapping (uint => Subject) public subjects;
+  //mapping (uint => Subject) public subjects;
+  Subject[] subjects;
   mapping (uint => Grades) public grades;
   mapping (uint => ProfessorsStudents) public professorsStudents;
   mapping (uint => ProfessorsSubjects) public professorsSubjects;
@@ -73,7 +75,7 @@ contract HistoryRecord {
   event UserAdded(address userId);
   event ProfessorAdded(address professorId);
   event RecordAdded(string subjectName, uint subjectValue, address userId, address adminId); 
-  event SubjectAdded(string subjectId);
+  event SubjectAdded(string nameSubject);
   
   // modifiers
 
@@ -116,13 +118,35 @@ contract HistoryRecord {
     emit ProfessorAdded(_profId);
   }
 
-  function addSubject(string memory _nameSubject) public {
+ /* function addSubject(string memory _nameSubject) public {
     Subject storage _subject = subjects[countSubject];
     require(keccak256(abi.encodePacked(_subject.name)) == keccak256(abi.encodePacked(_nameSubject)), "This subject already exists.");
     _subject.name = _nameSubject;
     countSubject++;
 
     emit SubjectAdded(_nameSubject);
+  }*/
+
+  function addSubject(string memory _nameSubject) public {
+    
+    if(!duplicatedSubject(_nameSubject)){
+    subjects.push(Subject(countSubject,_nameSubject));
+    countSubject++;
+    emit SubjectAdded(_nameSubject);
+    }
+  }
+
+  function duplicatedSubject(string memory _nameSubject) public returns (bool) {
+    for(uint i=0; i < subjects.length; i++) {
+      if(keccak256(abi.encodePacked(subjects[i].name)) == keccak256(abi.encodePacked(_nameSubject))){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function getSubjects() public view returns(Subject[] memory) {
+    return subjects;
   }
   
   function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
