@@ -9,6 +9,7 @@ import useAlert from '../../contexts/AlertContext/useAlert'
 import AddRecordModal from './AddRecordModal'
 import AddProfessorModal from './AddProfessorModal'
 import AddSubjectModal from './AddSubjectModal'
+import AddUserModal from './AddUserModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 
@@ -22,6 +23,8 @@ const Admin = () => {
   const [userExist, setUserExist] = useState(false)
   const [searchUserAddress, setSearchUserAddress] = useState('')
   const [addUserAddress, setAddUserAddress] = useState('')
+  const [addUserName, setAddUserName] = useState('')
+  const [addUserRecord, setAddUserRecord] = useState('')
   const [records, setRecords] = useState([])
   const [addRecord, setAddRecord] = useState(false)
   const [addProfessorRecord, setAddProfessorRecord] = useState(false)
@@ -80,10 +83,10 @@ const Admin = () => {
     }
   }
 
-  const registerUser = async () => {
+  const registerUser = async (addUserAddress,addUserName) => {
     try {
       console.log(addUserAddress)
-      await contract.methods.addUser(addUserAddress).send({ from: accounts[0] })
+      await contract.methods.addUser(addUserAddress,addUserName).send({ from: accounts[0] })
     } catch (err) {
       console.error(err)
     }
@@ -187,22 +190,17 @@ const Admin = () => {
 
                   <Typography variant='h4'>Register User</Typography>
                   <Box display='flex' alignItems='center' my={1}>
-                    <FormControl fullWidth>
-                      <TextField
-                        variant='outlined'
-                        placeholder='Register user by wallet address'
-                        value={addUserAddress}
-                        onChange={e => setAddUserAddress(e.target.value)}
-                        InputProps={{ style: { fontSize: '15px' } }}
-                        InputLabelProps={{ style: { fontSize: '15px' } }}
-                        size='small'
+                    <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
+                      <AddUserModal
+                        handleCloseUser={() => setAddUserRecord(false)}
+                        handleUploadUser={registerUser}
+                        addUserAddress={addUserAddress}
+                        addUserName={addUserName}
                       />
-                    </FormControl>
-                    <Box mx={2}>
-                      <CustomButton text={'Register'} handleClick={() => registerUser()}>
-                        <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                      </CustomButton>
-                    </Box>
+                    </Modal>
+                    <CustomButton text={'New User'} handleClick={() => setAddUserRecord(true)}>
+                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                    </CustomButton>
                   </Box>
 
                   <Box mt={6} mb={4}>

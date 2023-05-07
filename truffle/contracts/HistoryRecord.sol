@@ -103,9 +103,10 @@ contract HistoryRecord {
     emit AdminAdded(msg.sender);
   }
 
-  function addUser(address _userId) public senderIsAdmin {
+  function addUser(address _userId, string memory _nameUser) public senderIsAdmin {
     require(users[_userId].id != _userId, "This user already exists.");
     users[_userId].id = _userId;
+    users[_userId].name = _nameUser;
 
     emit UserAdded(_userId);
   }

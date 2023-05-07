@@ -38,7 +38,7 @@ const AddProfessorModal = ({ handleCloseProfessor, handleUploadProfessor }) => {
           </IconButton>
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
-          <Typography variant='h4'>Add Record</Typography>
+          <Typography variant='h4'>Add Professor</Typography>
           <Box my={2}>
             <FormControl fullWidth>
               <TextField
