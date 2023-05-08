@@ -36,33 +36,9 @@ const Admin = () => {
   const [subjectList, setSubjectList]= useState(false)
   const [professors, setProfessors] = useState([])
   const [professorList, setProfessorList]= useState(false)
-  
-  /* to delete */
-  const [userAddr, setUserAddr] = useState('')
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
-  const rec = async () => {
-    if (!userAddr) {
-      setAlert('Please search for a patient first', 'error')
-      return
-    }
-    try {
-        await contract.methods.addRecord(subjectName,subjectValue, userAddr).send({ from: accounts[0] })
-        setAlert('New record uploaded', 'success')
-        setAddRecord(false)
-
-        // refresh records
-        const records = await contract.methods.getRecords(userAddr)
-        setRecords(records)
-    } catch (err) {
-      setAlert('Record upload failed', 'error')
-      console.log('subject :>> ',subjectName)
-      console.log('value :>> ', subjectValue)
-      console.error(err)
-    }
-  }
-
-
+  
   const searchUser = async () => {
     try {
       if (!/^(0x)?[0-9a-f]{40}$/i.test(searchUserAddress)) {
@@ -285,45 +261,6 @@ const Admin = () => {
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>add rec</Typography>
-                  <Box display='flex' alignItems='center' my={1}>
-                    <FormControl fullWidth>
-                      <TextField
-                        variant='outlined'
-                        placeholder='Search user by wallet address'
-                        value={userAddr}
-                        onChange={e => setUserAddr(e.target.value)}
-                        InputProps={{ style: { fontSize: '15px' } }}
-                        InputLabelProps={{ style: { fontSize: '15px' } }}
-                        size='small'
-                      />
-                      <TextField
-                        variant='outlined'
-                        placeholder='Name of the subject'
-                        value={subjectName}
-                        onChange={e => setSubjectName(e.target.value)}
-                        InputProps={{ style: { fontSize: '15px' } }}
-                        InputLabelProps={{ style: { fontSize: '15px' } }}
-                        size='small'
-                      />
-                      <TextField 
-                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                        placeholder='Value of the subject'
-                        value={subjectValue}
-                        onChange={e => setSubjectValue(e.target.value)}
-                      />
-                    </FormControl>
-                    <Box mx={2}>
-                      <CustomButton text={'Register'} handleClick={() => rec()}>
-                        <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                      </CustomButton>
-                    </Box>
-                  </Box>
-
-                  <Box mt={6} mb={4}>
-                    <Divider />
-                  </Box>
-           
                   <Modal key="recordModal" open={addRecord} onClose={() => setAddRecord(false)}>
                     <AddRecordModal
                       handleClose={() => setAddRecord(false)}

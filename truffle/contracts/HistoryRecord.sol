@@ -111,6 +111,14 @@ contract HistoryRecord {
     emit UserAdded(_userId);
   }
 
+  function getUsers() public view returns(User[] memory) {
+    User[] memory us = users;
+    for(uint i =0; i< us.length(); i++) {
+      us[i] = users[i];
+    }
+    return us;
+  }
+
   function addProfessor(address _profId, string memory _nameProfessor) public {
     require(professors[_profId].id != _profId, "This professor already exists.");
     professors[_profId].id = _profId;
