@@ -1,0 +1,52 @@
+import React, { useState } from 'react'
+import CustomButton from '../../components/CustomButton'
+import { Box, FormControl, TextField, IconButton, Typography } from '@mui/material'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import useAlert from '../../contexts/AlertContext/useAlert'
+import useEth from '../../contexts/EthContext/useEth'
+
+const ProfessorSubjectsModal = ({ handleCloseProfessorSubject }) => {
+  const { setAlert } = useAlert()
+
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        weight: '100vw',
+      }}
+    >
+      <Box
+        width='50vw'
+        style={{
+          backgroundColor: 'white',
+          boxShadow: 24,
+          borderRadius: 10,
+        }}
+        p={2}
+        pr={6}
+        pb={0}
+        position='relative'
+      >
+        <Box position='absolute' sx={{ top: 5, right: 5 }}>
+          <IconButton onClick={() => handleCloseProfessorSubject()}>
+            <CloseRoundedIcon />
+          </IconButton>
+        </Box>
+        <Box display='flex' flexDirection='column' my={1}>
+          <Typography variant='h4'>Add Subject to Professor</Typography>
+          <Box my={2}>
+          </Box>
+          <Box display='flex' justifyContent='space-between' mb={2}>
+            <Box flexGrow={1} />
+          </Box>
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+export default ProfessorSubjectsModal

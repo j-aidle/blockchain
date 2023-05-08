@@ -10,6 +10,7 @@ import AddRecordModal from './AddRecordModal'
 import AddProfessorModal from './AddProfessorModal'
 import AddSubjectModal from './AddSubjectModal'
 import AddUserModal from './AddUserModal'
+import ProfessorSubjectsModal from './ProfessorSubjectsModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 
@@ -38,6 +39,7 @@ const Admin = () => {
   const [professorList, setProfessorList]= useState(false)
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
+  const [addProfessorSubjectRecord, setAddProfessorSubjectRecord]= useState(false)
   
   const searchUser = async () => {
     try {
@@ -191,10 +193,19 @@ const Admin = () => {
                       addProfessorAddress={addProfessorAddress}
                       addProfessorName={addProfessorName}
                     />
-                    </Modal>
-                    <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
-                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                    </CustomButton>
+                  </Modal>
+                  <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
+                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                  </CustomButton>
+                  <Typography variant='h4'>Add Subject to Professor</Typography>
+                  <Modal key="professorSubjectModal" open={addProfessorSubjectRecord} onClose={() => setAddProfessorSubjectRecord(false)}>
+                    <ProfessorSubjectsModal
+                      handleCloseProfessorSubject={() => setAddProfessorSubjectRecord(false)}
+                    />
+                  </Modal>
+                  <CustomButton text={'Add Subject to Professor'} handleClick={() => setAddProfessorSubjectRecord(true)}>
+                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                  </CustomButton>
 
                   <Box mt={6} mb={4}>
                     <Divider />
@@ -212,32 +223,6 @@ const Admin = () => {
                       <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
                     <div>
-                    <Menu
-                        id="subjectsMenu"
-                        aria-labelledby="subjectsMenu"
-                        anchorOrigin={{
-                          vertical: 'top',
-                          horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'left',
-                        }}
-                        open={subjectList} onClose={() => setSubjectList(false)}
-                      >
-                        {subjects.map((subject, index) => (
-                                  <MenuItem
-                                    key={index}
-                                    disabled={index === 0}
-                                  >
-                                    
-                                    <ListItemText key={subject.id}>{subject}</ListItemText>
-                                  </MenuItem>
-                                ))}
-                      </Menu>
-                      <CustomButton text={'Subjects List'} handleClick={() => getSubjects()}>
-                        <SearchRoundedIcon style={{ color: 'white' }} />
-                      </CustomButton>
                       <FormControl fullWidth>
                         <InputLabel id="subjectsList">Subjects</InputLabel>
                         <Select
@@ -249,7 +234,7 @@ const Admin = () => {
                           //onChange={handleChange}
                         >
                           {
-                            subjects.map((subject, index) => (
+                            subjects.map((subject) => (
                               <MenuItem value={subject.id}>{subject.name}</MenuItem>                              
                             )
                           )}
