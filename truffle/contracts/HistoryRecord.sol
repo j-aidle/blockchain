@@ -4,8 +4,8 @@ contract HistoryRecord {
 
   uint public countSubject;
   uint public countGrades;
-  uint public countProfessors =0;
-  uint public countUsers=0;
+  uint public countProfessors;
+  uint public countUsers;
 
 
   Subject[] subjects;
@@ -127,30 +127,40 @@ contract HistoryRecord {
   }
 
   function addProfessor(address _profId, string memory _nameProfessor) public {
-    require(professors[_profId].id != _profId, "This professor already exists.");
-    professors[_profId].id = _profId;
-    professors[_profId].name = _nameProfessor;
-    professorsList.push(_profId);
-    countProfessors++;
-    emit ProfessorAdded(_profId);
+    if(!duplicatedProfessor(_profId)){
+      require(professors[_profId].id != _profId, "This professor already exists.");
+      professors[_profId].id = _profId;
+      professors[_profId].name = _nameProfessor;
+      professorsList.push(_profId);
+      countProfessors++;
+      emit ProfessorAdded(_profId); 
+    }
   }
 
   function getProfessors() public view returns(Professor[] memory) {
-    Professor[] memory prof = new Professor[](countProfessors);
-    for (uint i = 0; i < countProfessors; i++) {
-      Professor storage p = professors[professorsList[i]];
-      prof[i] = p;
-    }
-    return prof;
+      Professor[] memory prof = new Professor[](countProfessors);
+      for (uint i = 0; i < countProfessors; i++) {
+        Professor storage p = professors[professorsList[i]];
+        prof[i] = p;
+      }
+      return prof;
   }
 
+  function duplicatedProfessor (address _profId) public view returns (bool) {
+    for(uint i=0; i < professorsList.length; i++) {
+      if(keccak256(abi.encodePacked(professors[professorsList[i]].id)) == keccak256(abi.encodePacked(_profId))){
+        return true;
+      }
+    }
+    return false;
+  }
 
   function addSubject(string memory _nameSubject) public {
     
     if(!duplicatedSubject(_nameSubject)){
-    subjects.push(Subject(countSubject,_nameSubject));
-    countSubject++;
-    emit SubjectAdded(_nameSubject);
+      subjects.push(Subject(countSubject,_nameSubject));
+      countSubject++;
+      emit SubjectAdded(_nameSubject);
     }
   }
 
