@@ -4,6 +4,8 @@ contract HistoryRecord {
 
   uint public countSubject;
   uint public countGrades;
+  uint public countProfessors;
+  uint public countUsers;
     
   struct Record{
     uint id;
@@ -64,8 +66,9 @@ contract HistoryRecord {
   mapping (address => Admin) public admins;
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
-  //mapping (uint => Subject) public subjects;
   Subject[] subjects;
+  address[] usersList;
+  address[] professorsList;
   mapping (uint => Grades) public grades;
   mapping (uint => ProfessorsStudents) public professorsStudents;
   mapping (uint => ProfessorsSubjects) public professorsSubjects;
@@ -107,25 +110,52 @@ contract HistoryRecord {
     require(users[_userId].id != _userId, "This user already exists.");
     users[_userId].id = _userId;
     users[_userId].name = _nameUser;
-
+    usersList.push(_userId);
+    countUsers++;
     emit UserAdded(_userId);
   }
-
+  
   function getUsers() public view returns(User[] memory) {
+    User[] memory us = new User[](countUsers);
+    for (uint i = 0; i < countUsers; i++) {
+      User storage u = users[usersList[i]];
+      us[i] = u;
+    }
+    return us;
+  }
+
+  /*function getUsers() public view returns(User[] memory) {
     User[] memory us = users;
     for(uint i =0; i< us.length(); i++) {
       us[i] = users[i];
     }
     return us;
-  }
+  }*/
 
   function addProfessor(address _profId, string memory _nameProfessor) public {
     require(professors[_profId].id != _profId, "This professor already exists.");
     professors[_profId].id = _profId;
     professors[_profId].name = _nameProfessor;
-
+    professorsList.push(_profId);
+    countProfessors++;
     emit ProfessorAdded(_profId);
   }
+  
+  function getProfessors() public view returns(Professor[] memory) {
+    Professor[] memory prof = new Professor[](countProfessors);
+    for (uint i = 0; i < countProfessors; i++) {
+      Professor storage p = professors[professorsList[i]];
+      prof[i] = p;
+    }
+    return prof;
+  }
+  /*function addProfessor(address _profId, string memory _nameProfessor) public {
+    require(professors[_profId].id != _profId, "This professor already exists.");
+    professors[_profId].id = _profId;
+    professors[_profId].name = _nameProfessor;
+
+    emit ProfessorAdded(_profId);
+  }*/
 
  /* function addSubject(string memory _nameSubject) public {
     Subject storage _subject = subjects[countSubject];
@@ -145,7 +175,7 @@ contract HistoryRecord {
     }
   }
 
-  function duplicatedSubject(string memory _nameSubject) public returns (bool) {
+  function duplicatedSubject(string memory _nameSubject) public view returns (bool) {
     for(uint i=0; i < subjects.length; i++) {
       if(keccak256(abi.encodePacked(subjects[i].name)) == keccak256(abi.encodePacked(_nameSubject))){
         return true;

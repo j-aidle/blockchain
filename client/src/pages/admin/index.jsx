@@ -109,6 +109,17 @@ const Admin = () => {
     }
   }
 
+  const getProfessors = async () => {
+    try {
+      const prof = await contract.methods.getProfessors().call({ from: accounts[0] })
+      setProfessors(prof)
+      //console.log('subjects', subj)
+
+      } catch(err) {
+      console.log(err);
+    }
+  }
+
 
   const addRecordCallback = useCallback(
     async (subjectName, subjectValue, userAddress) => {
@@ -135,6 +146,7 @@ const Admin = () => {
   )
   useEffect(() => {
     getSubjects();
+    getProfessors();
   })
 
   
@@ -236,6 +248,26 @@ const Admin = () => {
                           {
                             subjects.map((subject) => (
                               <MenuItem value={subject.id}>{subject.name}</MenuItem>                              
+                            )
+                          )}
+                        </Select>
+                      </FormControl>
+                      
+                    </div>
+                    <div>
+                      <FormControl fullWidth>
+                        <InputLabel id="professorsList">Professors</InputLabel>
+                        <Select
+                          labelId="demo-professorsList"
+                          id="demo-simple-select2"
+                          value={0}
+                          label="Professor"
+                          onLoad={() => getProfessors()}
+                          //onChange={handleChange}
+                        >
+                          {
+                            professors.map((professor) => (
+                              <MenuItem value={professor.id}>{professor.name}</MenuItem>                              
                             )
                           )}
                         </Select>
