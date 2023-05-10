@@ -1,4 +1,4 @@
-import { Box, Divider, FormControl, Modal, ListItemText, TextField, Typography, Backdrop, CircularProgress, Menu, MenuItem, InputLabel, Select } from '@mui/material'
+import { Box, Divider, FormControl, Modal, TextField, Typography, Backdrop, CircularProgress, MenuItem, InputLabel, Select } from '@mui/material'
 import React, { useCallback, useEffect } from 'react'
 import { useState} from 'react'
 import CustomButton from '../../components/CustomButton'
@@ -13,6 +13,13 @@ import AddUserModal from './AddUserModal'
 import ProfessorSubjectsModal from './ProfessorSubjectsModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 
 
 const Admin = () => {
@@ -23,6 +30,7 @@ const Admin = () => {
 
   const [userExist, setUserExist] = useState(false)
   const [searchUserAddress, setSearchUserAddress] = useState('')
+  const [users, setUsers] = useState([])
   const [addUserAddress, setAddUserAddress] = useState('')
   const [addUserName, setAddUserName] = useState('')
   const [addUserRecord, setAddUserRecord] = useState('')
@@ -120,6 +128,17 @@ const Admin = () => {
     }
   }
 
+  const getUsers = async () => {
+    try {
+      const us = await contract.methods.getUsers().call({ from: accounts[0] })
+      setUsers(us)
+      //console.log('subjects', subj)
+
+      } catch(err) {
+      console.log(err);
+    }
+  }
+
 
   const addRecordCallback = useCallback(
     async (subjectName, subjectValue, userAddress) => {
@@ -147,6 +166,7 @@ const Admin = () => {
   useEffect(() => {
     getSubjects();
     getProfessors();
+    getUsers();
   })
 
   
@@ -179,6 +199,37 @@ const Admin = () => {
                   </Box>
 
                   <Typography variant='h4'>Register User</Typography>
+                  {users.length === 0 && (
+                    <Box display='flex' alignItems='center' justifyContent='center' my={5}>
+                      <Typography variant='h5'>No Users found</Typography>
+                    </Box>
+                  )}
+
+                  {users.length > 0 && (
+                    <Box display='flex' flexDirection='column' mt={3} mb={-2}>
+                      <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="users table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Subject Name</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {users.map((user) => (
+                              <TableRow
+                                key={user.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                              >
+                                <TableCell component="th" scope="row">
+                                  {user.name}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  )}
                   <Box display='flex' alignItems='center' my={1}>
                     <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
                       <AddUserModal
@@ -198,6 +249,37 @@ const Admin = () => {
                   </Box>
 
                   <Typography variant='h4'>Register Professor</Typography>
+                  {professors.length === 0 && (
+                    <Box display='flex' alignItems='center' justifyContent='center' my={5}>
+                      <Typography variant='h5'>No Professors found</Typography>
+                    </Box>
+                  )}
+
+                  {professors.length > 0 && (
+                    <Box display='flex' flexDirection='column' mt={3} mb={-2}>
+                      <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="professors table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Professors Name</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {professors.map((prof) => (
+                              <TableRow
+                                key={prof.name}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                              >
+                                <TableCell component="th" scope="row">
+                                  {prof.name}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  )}
                   <Modal key="professorModal" open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
                     <AddProfessorModal
                       handleCloseProfessor={() => setAddProfessorRecord(false)}
@@ -224,6 +306,37 @@ const Admin = () => {
                   </Box>
 
                   <Typography variant='h4'>Add Subject</Typography>
+                  {subjects.length === 0 && (
+                    <Box display='flex' alignItems='center' justifyContent='center' my={5}>
+                      <Typography variant='h5'>No Professors found</Typography>
+                    </Box>
+                  )}
+
+                  {subjects.length > 0 && (
+                    <Box display='flex' flexDirection='column' mt={3} mb={-2}>
+                      <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="subjects table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Subject Name</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {subjects.map((sub) => (
+                              <TableRow
+                                key={sub.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                              >
+                                <TableCell component="th" scope="row">
+                                  {sub.name}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Box>
+                  )}
                   <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
                     <AddSubjectModal
                       handleCloseSubject={() => setAddSubjectRecord(false)}
@@ -329,7 +442,7 @@ const Admin = () => {
       
                 </>
               )}
-              {role === 'user' && (
+              {(role === 'user' || role === 'professor') && (
                 <Box display='flex' justifyContent='center'>
                   <Typography variant='h5'>Only Admin can access this page</Typography>
                 </Box>

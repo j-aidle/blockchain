@@ -4,9 +4,14 @@ contract HistoryRecord {
 
   uint public countSubject;
   uint public countGrades;
-  uint public countProfessors;
-  uint public countUsers;
-    
+  uint public countProfessors =0;
+  uint public countUsers=0;
+
+
+  Subject[] subjects;
+  address[] professorsList;
+  address[] usersList;
+
   struct Record{
     uint id;
     string subjectName;
@@ -66,9 +71,6 @@ contract HistoryRecord {
   mapping (address => Admin) public admins;
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
-  Subject[] subjects;
-  address[] usersList;
-  address[] professorsList;
   mapping (uint => Grades) public grades;
   mapping (uint => ProfessorsStudents) public professorsStudents;
   mapping (uint => ProfessorsSubjects) public professorsSubjects;
@@ -124,14 +126,6 @@ contract HistoryRecord {
     return us;
   }
 
-  /*function getUsers() public view returns(User[] memory) {
-    User[] memory us = users;
-    for(uint i =0; i< us.length(); i++) {
-      us[i] = users[i];
-    }
-    return us;
-  }*/
-
   function addProfessor(address _profId, string memory _nameProfessor) public {
     require(professors[_profId].id != _profId, "This professor already exists.");
     professors[_profId].id = _profId;
@@ -140,7 +134,7 @@ contract HistoryRecord {
     countProfessors++;
     emit ProfessorAdded(_profId);
   }
-  
+
   function getProfessors() public view returns(Professor[] memory) {
     Professor[] memory prof = new Professor[](countProfessors);
     for (uint i = 0; i < countProfessors; i++) {
@@ -149,22 +143,7 @@ contract HistoryRecord {
     }
     return prof;
   }
-  /*function addProfessor(address _profId, string memory _nameProfessor) public {
-    require(professors[_profId].id != _profId, "This professor already exists.");
-    professors[_profId].id = _profId;
-    professors[_profId].name = _nameProfessor;
 
-    emit ProfessorAdded(_profId);
-  }*/
-
- /* function addSubject(string memory _nameSubject) public {
-    Subject storage _subject = subjects[countSubject];
-    require(keccak256(abi.encodePacked(_subject.name)) == keccak256(abi.encodePacked(_nameSubject)), "This subject already exists.");
-    _subject.name = _nameSubject;
-    countSubject++;
-
-    emit SubjectAdded(_nameSubject);
-  }*/
 
   function addSubject(string memory _nameSubject) public {
     
