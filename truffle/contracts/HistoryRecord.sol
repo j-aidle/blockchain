@@ -50,19 +50,19 @@ contract HistoryRecord {
   }
 
   struct ProfessorsStudents {
-    uint id;
+    //uint id;
     address professorId;
     address studentId;
   }
   struct ProfessorsSubjects {
-    uint id;
+    //uint id;
     address professorId;
-    address subjectId;
+    uint subjectId;
   }
   struct StudentsSubjects {
-    uint id;
+   //uint id;
     address studentId;
-    address subjectId;
+    uint subjectId;
   }
 
   
@@ -71,8 +71,9 @@ contract HistoryRecord {
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
   mapping (uint => Grades) public grades;
+  ProfessorsSubjects[] professorsSubjects;
   mapping (uint => ProfessorsStudents) public professorsStudents;
-  mapping (uint => ProfessorsSubjects) public professorsSubjects;
+  //mapping (uint => ProfessorsSubjects) public professorsSubjects;
   mapping (uint => StudentsSubjects) public studentsSubjects;
 
   event AdminAdded(address adminId);
@@ -80,6 +81,8 @@ contract HistoryRecord {
   event ProfessorAdded(address professorId);
   event RecordAdded(string subjectName, uint subjectValue, address userId, address adminId); 
   event SubjectAdded(string nameSubject);
+  event ProfessorSubjectsAdded(address _professorId,uint _subjectId);
+  event ProfessorSubjectsDeleted(address _professorId,uint _subjectId);
   
   // modifiers
 
@@ -99,6 +102,24 @@ contract HistoryRecord {
   }
   
   // functions
+  function addProfessorSubjects(address _professorId, uint _subjectId) public {
+    professorsSubjects.push(ProfessorsSubjects(_professorId,_subjectId));
+    emit ProfessorSubjectsAdded(_professorId,_subjectId);
+  }
+
+  function deleteProfessorSubjects(address _professorId, uint _subjectId) public {
+    for (uint i =0; i < professorsSubjects.length; i++) {
+      if(professorsSubjects[i].professorId == _professorId && professorsSubjects[i].subjectId == _subjectId) {
+        professorsSubjects[i] = professorsSubjects[professorsSubjects.length - 1];
+      }
+    }
+    professorsSubjects.pop();
+    emit ProfessorSubjectsDeleted(_professorId,_subjectId);
+  }
+
+  function getProfessorSubjects() public view returns(ProfessorsSubjects[] memory) {
+    return professorsSubjects;
+  }
 
   function addAdmin() public {
     require(admins[msg.sender].id != msg.sender, "This admin already exists.");

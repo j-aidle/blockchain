@@ -142,13 +142,11 @@ const Admin = () => {
     try {
       const us = await contract.methods.getUsers().call({ from: accounts[0] })
       setUsers(us)
-      //console.log('subjects', subj)
 
       } catch(err) {
       console.log(err);
     }
   }
-
 
   const addRecordCallback = useCallback(
     async (subjectName, subjectValue, userAddress) => {
