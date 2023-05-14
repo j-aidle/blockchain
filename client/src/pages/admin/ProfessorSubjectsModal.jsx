@@ -199,7 +199,6 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
               <CustomButton
                   text='Save'
                   handleClick={saveSubjects()} />
-                  />
           </Box>
         </Box>
       </Box>
