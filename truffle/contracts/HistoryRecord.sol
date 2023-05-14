@@ -2,11 +2,10 @@ pragma solidity >0.8.0;
 
 contract HistoryRecord {
 
-  uint public countSubject;
-  uint public countGrades;
-  uint public countProfessors;
-  uint public countUsers;
-
+  uint public countSubject=0;
+  uint public countGrades=0;
+  uint public countProfessors=0;
+  uint public countUsers=0;
 
   Subject[] subjects;
   address[] professorsList;
@@ -155,8 +154,7 @@ contract HistoryRecord {
     return false;
   }
 
-  function addSubject(string memory _nameSubject) public {
-    
+  function addSubject(string memory _nameSubject) public {    
     if(!duplicatedSubject(_nameSubject)){
       subjects.push(Subject(countSubject,_nameSubject));
       countSubject++;

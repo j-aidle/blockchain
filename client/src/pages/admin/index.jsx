@@ -79,6 +79,16 @@ const Admin = () => {
   }
 
   const registerProfessor = async (addProfessorAddress,addProfessorName) => {
+    let dupl = false
+    for(let i=0; i < professors.length; i++) {
+      if(professors[i].id === addProfessorAddress){
+        dupl = true
+      }
+    }
+    if(dupl){
+      setAlert('Duplicated professor', 'error')
+      return
+    }
     try {
         await contract.methods.addProfessor(addProfessorAddress,addProfessorName).send({ from: accounts[0]})
         setAddProfessorRecord(false)
@@ -262,6 +272,7 @@ const Admin = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Professors Name</TableCell>
+                              <TableCell></TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -272,6 +283,18 @@ const Admin = () => {
                               >
                                 <TableCell component="th" scope="row">
                                   {prof.name}
+                                </TableCell>
+                                <TableCell component="th" scope="row">
+                                  <Modal key="professorSubjectModal{prof.id}" open={addProfessorSubjectRecord} onClose={() => setAddProfessorSubjectRecord(false)}>
+                                    <ProfessorSubjectsModal
+                                      handleCloseProfessorSubject={() => setAddProfessorSubjectRecord(false)}
+                                      subjects={subjects}
+                                      professors={prof.name}
+                                    />
+                                  </Modal>
+                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => setAddProfessorSubjectRecord(true)}>
+                                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                                  </CustomButton>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -292,14 +315,6 @@ const Admin = () => {
                     <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                   </CustomButton>
                   <Typography variant='h4'>Add Subject to Professor</Typography>
-                  <Modal key="professorSubjectModal" open={addProfessorSubjectRecord} onClose={() => setAddProfessorSubjectRecord(false)}>
-                    <ProfessorSubjectsModal
-                      handleCloseProfessorSubject={() => setAddProfessorSubjectRecord(false)}
-                    />
-                  </Modal>
-                  <CustomButton text={'Add Subject to Professor'} handleClick={() => setAddProfessorSubjectRecord(true)}>
-                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                  </CustomButton>
 
                   <Box mt={6} mb={4}>
                     <Divider />
@@ -308,7 +323,7 @@ const Admin = () => {
                   <Typography variant='h4'>Add Subject</Typography>
                   {subjects.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
-                      <Typography variant='h5'>No Professors found</Typography>
+                      <Typography variant='h5'>No Subjects found</Typography>
                     </Box>
                   )}
 
@@ -319,6 +334,7 @@ const Admin = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Subject Name</TableCell>
+                              <TableCell></TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
