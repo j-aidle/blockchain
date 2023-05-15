@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import CustomButton from '../../components/CustomButton'
 import { Box, FormControl, TextField, IconButton, Typography } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -14,45 +14,74 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import PropTypes from 'prop-types';
 
-const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, professors }) => {
+
+const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, professors, professorId }) => {
   const {
     state: { contract, accounts },
   } = useEth()
   const { setAlert } = useAlert()
-  const [professorsSubjects, setProfessorsSubjects] = useState([])
   const [selected, setSelected] = React.useState([]);
   const isSelected = (name) => selected.indexOf(name) !== -1;
-  
+  const [professorsSubjects, setProfessorsSubjects] = useState([])
 
-  const getProfessorSubjects = async () => {
-    try {
-      const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
-      setProfessorsSubjects(ps)
+  useEffect(() => {
+    getProfessorSubjects();
+    getSelected();
+  }, []);
 
-      } catch(err) {
-      console.log(err);
+  const getSelected = async () => {
+    console.log('hola',professorsSubjects)
+      for (let i = 0; i < professorsSubjects.length; i++) {
+        console.log('sub id',professorsSubjects[i].subjectId)
+        setSelected(professorsSubjects[i].subjectId)      
+      }
+      
+      console.log('getselect',selected)
     }
-  }
+    
+    const getProfessorSubjects = async () => {
+      try {
+        const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
+        setProfessorsSubjects(ps)
+        } catch(err) {
+        console.log(err);
+      }
+    }
 
   const saveSubjects = async () => {
     try {
      //const professorSubjects = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })   
-      console.log('selected ',selected)
-    if (professorsSubjects.length > 0){
-      professorsSubjects.array.forEach(element => {
-      if (!selected.find(element.subjectId)) {
-        contract.methods.deleteProfessorSubjects(professors,element.subjectId).call({ from: accounts[0] })          
+     console.log('professorsSubjects ',professorsSubjects) 
+     console.log('selected ',selected)
+     console.log('contracts', contract)
+     console.log('professors', professors)
+     if (professorsSubjects.length > 0){
+      for (let i = 0; i < professorsSubjects.length; i++) {
+        for (let k = 0; k < selected.length; k++) {
+          if(professorsSubjects[k].subjectId !== selected[i]) {
+            contract.methods.deleteProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
+          }  
+        
       }
-     });
-    }
-
+      }
+      /*professorsSubjects.array.forEach(element => {
+      if (!selected.find(element.subjectId)) {
+        contract.methods.deleteProfessorSubjects(professorId,element.subjectId).call({ from: accounts[0] })          
+      }
+     });*/
     for (let i = 0; i < selected.length; i++) {
       for (let k = 0; k < professorsSubjects.length; k++) {
         if(professorsSubjects[k].subjectId === selected[i]) {
-          contract.methods.addProfessorSubjects(professors,selected[i]).send({ from: accounts[0] });
+          contract.methods.addProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
         }        
       }      
     }
+    } else {
+      for (let i = 0; i < selected.length; i++) {
+            contract.methods.addProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
+      }
+    }
+    handleCloseProfessorSubject = false;
 
      /*selected.array.forEach( element => {
       if(professorsSubjects.find(element)) {
@@ -97,7 +126,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
   function EnhancedTableHead(props) {
     const { onSelectAllClick, numSelected, rowCount } =
       props;
-  
+    
     return (
       <TableHead>
         <TableRow>
@@ -123,7 +152,6 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
     onSelectAllClick: PropTypes.func.isRequired,
     rowCount: PropTypes.number.isRequired,
   };
-
 
   return (
     <Box
@@ -153,7 +181,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
           </IconButton>
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
-          <Typography variant='h4'>Add Subject to Professor {professors}</Typography>
+          <Typography variant='h4'>Add Subject to Professor {professors.name}</Typography>
           <Box my={2}>
           <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       <TableContainer component={Paper}>
@@ -167,7 +195,6 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
                             {subjects.map((sub) => {
                               const isItemSelected = isSelected(sub.id);
                               const labelId = `enhanced-table-checkbox-${sub.id}`;
-
                               return(
                               <TableRow
                                 key={sub.id}
@@ -198,7 +225,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
               <Box flexGrow={1} />
               <CustomButton
                   text='Save'
-                  handleClick={saveSubjects()} />
+                  handleClick={saveSubjects} />
           </Box>
         </Box>
       </Box>

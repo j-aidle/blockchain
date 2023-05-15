@@ -48,6 +48,20 @@ const Admin = () => {
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
   const [addProfessorSubjectRecord, setAddProfessorSubjectRecord]= useState(false)
+  const [selected,setSelected] = useState([])
+  const [professorsSubjects, setProfessorsSubjects] = useState([])
+  const [tableProfessorSubjectRecord, setTableProfessorSubjectRecord] = useState([]);
+  const [selectedProfessor, setSelectedProfessor] =useState('');
+ 
+
+  const showModalAndTableRecord = (record) => {
+    console.log('prfe ',record);
+    setSelectedProfessor(record);
+    setAddProfessorSubjectRecord(true);
+    //getProfessorSubjects();
+    //getSelected();
+  };
+
   
   const searchUser = async () => {
     try {
@@ -73,6 +87,7 @@ const Admin = () => {
     try {
       console.log(addUserAddress)
       await contract.methods.addUser(addUserAddress,addUserName).send({ from: accounts[0] })
+      setAddUserRecord(false)
     } catch (err) {
       console.error(err)
     }
@@ -176,6 +191,7 @@ const Admin = () => {
     getProfessors();
     getUsers();
   })
+
 
   
 
@@ -283,14 +299,7 @@ const Admin = () => {
                                   {prof.name}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                  <Modal key="professorSubjectModal{prof.id}" open={addProfessorSubjectRecord} onClose={() => setAddProfessorSubjectRecord(false)}>
-                                    <ProfessorSubjectsModal
-                                      handleCloseProfessorSubject={() => setAddProfessorSubjectRecord(false)}
-                                      subjects={subjects}
-                                      professors={prof.name}
-                                    />
-                                  </Modal>
-                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => setAddProfessorSubjectRecord(true)}>
+                                  <CustomButton text={'Add Subject to Professor'} handleClick={() =>  showModalAndTableRecord(prof)}>
                                     <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                                   </CustomButton>
                                 </TableCell>
@@ -299,6 +308,17 @@ const Admin = () => {
                           </TableBody>
                         </Table>
                       </TableContainer>
+                      <Modal key={'modal'-selectedProfessor.id} open={addProfessorSubjectRecord} onClose={() => setAddProfessorSubjectRecord(false)}>
+                        <ProfessorSubjectsModal
+                          destroyOnClose
+                          handleCloseProfessorSubject={() => setAddProfessorSubjectRecord(false)}
+                          subjects={subjects}
+                          professors={selectedProfessor}
+                          professorId={selectedProfessor.id}
+                          //professorsSubjects={professorsSubjects}
+                          //selected={selected}
+                        />
+                      </Modal>
                     </Box>
                   )}
                   <Modal key="professorModal" open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
