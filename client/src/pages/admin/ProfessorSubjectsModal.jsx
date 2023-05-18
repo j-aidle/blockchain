@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import CustomButton from '../../components/CustomButton'
-import { Box, FormControl, TextField, IconButton, Typography } from '@mui/material'
+import { Box, FormControl, TextField, IconButton, Typography, circularProgressClasses } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import useEth from '../../contexts/EthContext/useEth'
@@ -14,19 +14,26 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import PropTypes from 'prop-types';
 
-
-const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, professors, professorId }) => {
+const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, professors, professorId, subjectsOfProfessor }) => {
   const {
     state: { contract, accounts },
   } = useEth()
   const { setAlert } = useAlert()
   const [selected, setSelected] = React.useState([]);
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (name) => {
+    for (let i = 0; i < subjectsOfProfessor.length; i++) {
+      if(subjectsOfProfessor[i].id === name ){
+          return subjectsOfProfessor[i].selected;
+      }
+      
+    }
+  }
   const [professorsSubjects, setProfessorsSubjects] = useState([])
-
+  
   useEffect(() => {
+    console.log('modal profe',professors.prof.name)
     getProfessorSubjects();
-    getSelected();
+    //getSelected();
   }, []);
 
   const getSelected = async () => {
@@ -52,36 +59,26 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
     try {
      //const professorSubjects = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })   
      console.log('professorsSubjects ',professorsSubjects) 
-     console.log('selected ',selected)
+     console.log('sub prof ',subjectsOfProfessor)
      console.log('contracts', contract)
      console.log('professors', professors)
-     if (professorsSubjects.length > 0){
-      for (let i = 0; i < professorsSubjects.length; i++) {
-        for (let k = 0; k < selected.length; k++) {
-          if(professorsSubjects[k].subjectId !== selected[i]) {
-            contract.methods.deleteProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
-          }  
-        
+     for (let k = 0; k < subjectsOfProfessor.length; k++) {
+        let found = false;
+        for(let i = 0; i < professorsSubjects.length; i++) {
+          if (professorsSubjects[i].professorId === professors.prof.id && professorsSubjects[i].subjectId === subjectsOfProfessor[k].id) {
+            found = true;
+            break;
+          }
+        }
+        if(subjectsOfProfessor[k].selected === true && !found) {
+            contract.methods.addProfessorSubjects(professors.prof.id,subjectsOfProfessor[k].id).send({ from: accounts[0] });
+        } 
+        if (subjectsOfProfessor[k].selected === false && found) {
+              contract.methods.deleteProfessorSubjects(professors.prof.id,subjectsOfProfessor[k].id).send({ from: accounts[0] });
+        }
+
       }
-      }
-      /*professorsSubjects.array.forEach(element => {
-      if (!selected.find(element.subjectId)) {
-        contract.methods.deleteProfessorSubjects(professorId,element.subjectId).call({ from: accounts[0] })          
-      }
-     });*/
-    for (let i = 0; i < selected.length; i++) {
-      for (let k = 0; k < professorsSubjects.length; k++) {
-        if(professorsSubjects[k].subjectId === selected[i]) {
-          contract.methods.addProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
-        }        
-      }      
-    }
-    } else {
-      for (let i = 0; i < selected.length; i++) {
-            contract.methods.addProfessorSubjects(professorId,selected[i]).send({ from: accounts[0] });
-      }
-    }
-    handleCloseProfessorSubject = false;
+      handleCloseProfessorSubject();
 
      /*selected.array.forEach( element => {
       if(professorsSubjects.find(element)) {
@@ -96,7 +93,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = subjects.map((n) => n.id);
+      const newSelected = subjectsOfProfessor.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -104,7 +101,18 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
   };
 
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+    for (let i = 0; i < subjectsOfProfessor.length; i++) {
+      if(subjectsOfProfessor[i].id === name ){
+        if(subjectsOfProfessor[i].selected === true){
+          subjectsOfProfessor[i].selected = false;
+        } else {
+          subjectsOfProfessor[i].selected = true;
+        }
+      }
+      
+    }
+
+    /*const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
     if (selectedIndex === -1) {
@@ -120,18 +128,18 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
       );
     }
 
-    setSelected(newSelected);
+    setSelected(newSelected);*/
   };
 
   function EnhancedTableHead(props) {
     const { onSelectAllClick, numSelected, rowCount } =
       props;
-    
+  
     return (
       <TableHead>
         <TableRow>
           <TableCell padding="checkbox">
-            <Checkbox
+            {/* <Checkbox
               color="primary"
               indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={rowCount > 0 && numSelected === rowCount}
@@ -139,7 +147,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
               inputProps={{
                 'aria-label': 'select all desserts',
               }}
-            />
+            /> */}
           </TableCell>
           <TableCell>Subject Name</TableCell>
         </TableRow>
@@ -181,18 +189,18 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
           </IconButton>
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
-          <Typography variant='h4'>Add Subject to Professor {professors.name}</Typography>
+          <Typography variant='h4'>Add Subject to Professor {professors.prof.name}</Typography>
           <Box my={2}>
           <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 650 }} aria-label="subjects table">
                         <EnhancedTableHead
                           numSelected={selected.length}
-                          onSelectAllClick={handleSelectAllClick}
+                          //onSelectAllClick={handleSelectAllClick}
                           rowCount={subjects.length}
                         />
                           <TableBody>
-                            {subjects.map((sub) => {
+                            {subjectsOfProfessor.map((sub) => {
                               const isItemSelected = isSelected(sub.id);
                               const labelId = `enhanced-table-checkbox-${sub.id}`;
                               return(

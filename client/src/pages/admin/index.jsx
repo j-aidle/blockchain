@@ -44,24 +44,67 @@ const Admin = () => {
   const [subjects, setSubjects] = useState([])
   const [subjectList, setSubjectList]= useState(false)
   const [professors, setProfessors] = useState([])
-  const [professorList, setProfessorList]= useState(false)
+  const [professorList, setProfessorList]= useState([])
   const [subjectName, setSubjectName] = useState('')
   const [subjectValue, setSubjectValue] = useState('')
   const [addProfessorSubjectRecord, setAddProfessorSubjectRecord]= useState(false)
   const [selected,setSelected] = useState([])
   const [professorsSubjects, setProfessorsSubjects] = useState([])
-  const [tableProfessorSubjectRecord, setTableProfessorSubjectRecord] = useState([]);
   const [selectedProfessor, setSelectedProfessor] =useState('');
- 
+
+  const subjectsOfProfessor = async (professorId) => {
+    try {
+      const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
+      let arr = [];
+      for (let k = 0; k < subjects.length; k++) {
+       console.log(subjects[k])
+        arr.push({id:subjects[k].id,name:subjects[k].name, selected:false})          
+      }
+      console.log(arr)
+      for(let i =0; i< ps.length; i++){
+          if (ps[i].professorId ===professorId.prof.id){
+            for (let j = 0; j < arr.length; j++) {
+              if(arr[j].id === ps[i].subjectId) {
+                arr[j].selected = true;
+              }
+            
+            }
+          }           
+      }
+      setProfessorList(arr);
+
+      } catch(err) {
+      console.log(err);
+    }
+  }
+
 
   const showModalAndTableRecord = (record) => {
     console.log('prfe ',record);
     setSelectedProfessor(record);
+    console.log('selecionado',selectedProfessor)
     setAddProfessorSubjectRecord(true);
-    //getProfessorSubjects();
-    //getSelected();
+    subjectsOfProfessor(record)
   };
-
+  
+  const getSelected = async () => {
+  console.log('hola',professorsSubjects)
+    for (let i = 0; i < professorsSubjects.length; i++) {
+      console.log('sub id',professorsSubjects[i].subjectId)
+      selected.push(professorsSubjects[i].subjectId)      
+    }
+    return selected
+    console.log('getselect',selected)
+  }
+  
+  const getProfessorSubjects = async () => {
+    try {
+      const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
+      return ps
+      } catch(err) {
+      console.log(err);
+    }
+  }
   
   const searchUser = async () => {
     try {
@@ -87,7 +130,6 @@ const Admin = () => {
     try {
       console.log(addUserAddress)
       await contract.methods.addUser(addUserAddress,addUserName).send({ from: accounts[0] })
-      setAddUserRecord(false)
     } catch (err) {
       console.error(err)
     }
@@ -222,7 +264,21 @@ const Admin = () => {
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>Register User</Typography>
+                  <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
+                    <Typography variant='h4'>Register User</Typography>
+                    <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
+                      <AddUserModal
+                        handleCloseUser={() => setAddUserRecord(false)}
+                        handleUploadUser={registerUser}
+                        addUserAddress={addUserAddress}
+                        addUserName={addUserName}
+                      />
+                    </Modal>
+                    <CustomButton text={'New User'} handleClick={() => setAddUserRecord(true)}>
+                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                    </CustomButton>
+                  </Box>
+
                   {users.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
                       <Typography variant='h5'>No Users found</Typography>
@@ -254,25 +310,25 @@ const Admin = () => {
                       </TableContainer>
                     </Box>
                   )}
-                  <Box display='flex' alignItems='center' my={1}>
-                    <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
-                      <AddUserModal
-                        handleCloseUser={() => setAddUserRecord(false)}
-                        handleUploadUser={registerUser}
-                        addUserAddress={addUserAddress}
-                        addUserName={addUserName}
-                      />
-                    </Modal>
-                    <CustomButton text={'New User'} handleClick={() => setAddUserRecord(true)}>
-                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                    </CustomButton>
-                  </Box>
 
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>Register Professor</Typography>
+                  <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
+                      <Typography variant='h4'>Register Professor</Typography>
+                      <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
+                          <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                        </CustomButton>
+                      <Modal key="professorModal" open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
+                        <AddProfessorModal
+                          handleCloseProfessor={() => setAddProfessorRecord(false)}
+                          handleUploadProfessor={registerProfessor}
+                          addProfessorAddress={addProfessorAddress}
+                          addProfessorName={addProfessorName}
+                        />
+                      </Modal>
+                  </Box>
                   {professors.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
                       <Typography variant='h5'>No Professors found</Typography>
@@ -299,7 +355,7 @@ const Admin = () => {
                                   {prof.name}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                  <CustomButton text={'Add Subject to Professor'} handleClick={() =>  showModalAndTableRecord(prof)}>
+                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => showModalAndTableRecord({prof})}>
                                     <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                                   </CustomButton>
                                 </TableCell>
@@ -317,28 +373,30 @@ const Admin = () => {
                           professorId={selectedProfessor.id}
                           //professorsSubjects={professorsSubjects}
                           //selected={selected}
+                          subjectsOfProfessor={professorList}
                         />
                       </Modal>
                     </Box>
                   )}
-                  <Modal key="professorModal" open={addProfessorRecord} onClose={() => setAddProfessorRecord(false)}>
-                    <AddProfessorModal
-                      handleCloseProfessor={() => setAddProfessorRecord(false)}
-                      handleUploadProfessor={registerProfessor}
-                      addProfessorAddress={addProfessorAddress}
-                      addProfessorName={addProfessorName}
-                    />
-                  </Modal>
-                  <CustomButton text={'New Professor'} handleClick={() => setAddProfessorRecord(true)}>
-                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                  </CustomButton>
-                  <Typography variant='h4'>Add Subject to Professor</Typography>
 
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
 
-                  <Typography variant='h4'>Add Subject</Typography>
+                  <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
+                    <Typography variant='h4'>Add Subject</Typography>
+                    <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
+                      <AddSubjectModal
+                        handleCloseSubject={() => setAddSubjectRecord(false)}
+                        handleUploadSubject={registerSubject}
+                        addSubjectName={addSubjectName}
+                      />
+                    </Modal>
+                    <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
+                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                    </CustomButton>
+                  </Box>
+
                   {subjects.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
                       <Typography variant='h5'>No Subjects found</Typography>
@@ -371,16 +429,7 @@ const Admin = () => {
                       </TableContainer>
                     </Box>
                   )}
-                  <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
-                    <AddSubjectModal
-                      handleCloseSubject={() => setAddSubjectRecord(false)}
-                      handleUploadSubject={registerSubject}
-                      addSubjectName={addSubjectName}
-                    />
-                    </Modal>
-                    <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
-                      <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                    </CustomButton>
+
                     <div>
                       <FormControl fullWidth>
                         <InputLabel id="subjectsList">Subjects</InputLabel>
