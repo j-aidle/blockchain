@@ -24,8 +24,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
     for (let i = 0; i < subjectsOfProfessor.length; i++) {
       if(subjectsOfProfessor[i].id === name ){
           return subjectsOfProfessor[i].selected;
-      }
-      
+      }      
     }
   }
   const [professorsSubjects, setProfessorsSubjects] = useState([])
@@ -189,7 +188,7 @@ const ProfessorSubjectsModal = ({ handleCloseProfessorSubject, subjects, profess
           </IconButton>
         </Box>
         <Box display='flex' flexDirection='column' my={1}>
-          <Typography variant='h4'>Add Subject to Professor {professors.prof.name}</Typography>
+          <Typography variant='h4'>Subjects of Professor {professors.prof.name}</Typography>
           <Box my={2}>
           <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       <TableContainer component={Paper}>

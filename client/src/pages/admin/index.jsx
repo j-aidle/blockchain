@@ -50,10 +50,39 @@ const Admin = () => {
   const [subjectValue, setSubjectValue] = useState('')
   const [addProfessorSubjectRecord, setAddProfessorSubjectRecord]= useState(false)
   const [selected,setSelected] = useState([])
+  const [selectedSubjectsOfStudent,setSelectedSubjectsOfStudent] = useState([])
   const [professorsSubjects, setProfessorsSubjects] = useState([])
   const [selectedProfessor, setSelectedProfessor] =useState('');
   const [selectedUser, setSelectedUser] =useState('');
   const [addUserSubjectRecord, setAddUserSubjectRecord]= useState(false)
+  const [studentList, setStudentList]= useState([])
+
+  const subjectsOfStudent = async (student) => {
+    try {
+      const ss = await contract.methods.getStudentSubjects().call({ from: accounts[0] })
+      let arr = [];
+      for (let k = 0; k < professorsSubjects.length; k++) {
+       console.log(professorsSubjects[k])
+        arr.push({professorId:professorsSubjects[k].professorId,subjectId:professorsSubjects[k].subjectId, selected:false})          
+      }
+      console.log(arr)
+      for(let i =0; i< ss.length; i++){
+          if (ss[i].studentId ===student.user.id){
+            for (let j = 0; j < arr.length; j++) {
+              if(arr[j].professorId === ss[i].professorId && arr[j].subjectId === ss[i].subjectId) {
+                arr[j].selected = true;
+              }
+            
+            }
+          }           
+      }
+      setStudentList(arr);
+
+      } catch(err) {
+      console.log(err);
+    }
+  }
+
 
   const subjectsOfProfessor = async (professorId) => {
     try {
@@ -95,6 +124,7 @@ const Admin = () => {
     setSelectedUser(record);
     console.log('selecionado',selectedUser)
     setAddUserSubjectRecord(true);
+    subjectsOfStudent(record);
   };
   
   const getSelected = async () => {
@@ -316,10 +346,8 @@ const Admin = () => {
                                   {user.name}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                  <CustomButton text={'Add Subject to User'} handleClick={() => showModalUsersSubjects({user})}>
-                                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                                  </CustomButton>
-                                </TableCell>
+                                  <CustomButton text={'Enrollment'} handleClick={() => showModalUsersSubjects({user})}/>
+                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -329,8 +357,11 @@ const Admin = () => {
                         <UserSubjectsModal
                           destroyOnClose
                           handleCloseUserSubject={() => setAddUserSubjectRecord(false)}
-                          users={users}
+                          users={selectedUser}
                           professorsSubjects={professorsSubjects}
+                          professors={professors}
+                          subjects={subjects}
+                          subjectsOfStudent={studentList}
                         />
                       </Modal>
                     </Box>
@@ -380,9 +411,7 @@ const Admin = () => {
                                   {prof.name}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => showModalProfessorsSubjects({prof})}>
-                                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
-                                  </CustomButton>
+                                  <CustomButton text={'Subjects'} handleClick={() => showModalProfessorsSubjects({prof})}/>
                                 </TableCell>
                               </TableRow>
                             ))}

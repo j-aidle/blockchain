@@ -6,12 +6,11 @@ contract HistoryRecord {
   uint public countGrades=0;
   uint public countProfessors=0;
   uint public countUsers=0;
+  uint public countStudentSubjects=0;
 
   Subject[] subjects;
   address[] professorsList;
   address[] usersList;
-  ProfessorsSubjects[] public professorsSubjects;
-  Grades[] public grades;
 
   struct Record{
     uint id;
@@ -46,24 +45,26 @@ contract HistoryRecord {
 
   struct Grades {
     //uint id;
-    address studentId;
-    address subjectId;
+    uint studentSubjectsId;
+    string description;
     uint value;
+    uint256 momentAddition;
   }
 
-  struct ProfessorsStudents {
+  /*struct ProfessorsStudents {
     //uint id;
     address professorId;
     address studentId;
-  }
+  }*/
   struct ProfessorsSubjects {
     //uint id;
     address professorId;
     uint subjectId;
   }
   struct StudentsSubjects {
-   //uint id;
+    uint id;
     address studentId;
+    address professorId;
     uint subjectId;
   }
 
@@ -73,6 +74,9 @@ contract HistoryRecord {
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
   //mapping (uint => Grades) public grades;
+  Grades[] grades;
+  ProfessorsSubjects[] professorsSubjects;
+  StudentsSubjects[] studentsSubjects;
   //mapping (uint => ProfessorsStudents) public professorsStudents;
   //mapping (uint => ProfessorsSubjects) public professorsSubjects;
   //mapping (uint => StudentsSubjects) public studentsSubjects;
@@ -84,6 +88,8 @@ contract HistoryRecord {
   event SubjectAdded(string nameSubject);
   event ProfessorSubjectsAdded(address _professorId,uint _subjectId);
   event ProfessorSubjectsDeleted(address _professorId,uint _subjectId);
+  event StudentSubjectsAdded(address _studentId,address _professorId,uint _subjectId);
+  event StudentSubjectsDeleted(address _studentId,address _professorId,uint _subjectId);
   
   // modifiers
 
@@ -103,6 +109,26 @@ contract HistoryRecord {
   }
   
   // functions
+  function addStudentSubjects(address _studentId, address _professorId, uint _subjectId) public {
+    studentsSubjects.push(StudentsSubjects(countStudentSubjects,_studentId,_professorId,_subjectId));
+    countStudentSubjects++;
+    emit StudentSubjectsAdded(_studentId,_professorId,_subjectId);
+  }
+
+  function deleteStudentSubjects(address _studentId, address _professorId, uint _subjectId) public {
+    for (uint i = 0; i < studentsSubjects.length; i++) {
+      if(studentsSubjects[i].studentId == _studentId && studentsSubjects[i].professorId == _professorId && studentsSubjects[i].subjectId == _subjectId){
+        studentsSubjects[i] = studentsSubjects[studentsSubjects.length -1];
+      }
+    }
+    studentsSubjects.pop();
+    emit StudentSubjectsDeleted(_studentId,_professorId,_subjectId);
+  }
+
+  function getStudentSubjects() public view returns(StudentsSubjects[] memory) {
+    return studentsSubjects;
+  }
+
   function addProfessorSubjects(address _professorId, uint _subjectId) public {
     professorsSubjects.push(ProfessorsSubjects(_professorId,_subjectId));
     emit ProfessorSubjectsAdded(_professorId,_subjectId);
