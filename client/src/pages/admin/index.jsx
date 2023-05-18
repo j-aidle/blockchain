@@ -11,6 +11,7 @@ import AddProfessorModal from './AddProfessorModal'
 import AddSubjectModal from './AddSubjectModal'
 import AddUserModal from './AddUserModal'
 import ProfessorSubjectsModal from './ProfessorSubjectsModal'
+import UserSubjectsModal from './UserSubjectsModal'
 import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
 import Record from '../../components/Record'
 import Table from '@mui/material/Table';
@@ -51,6 +52,8 @@ const Admin = () => {
   const [selected,setSelected] = useState([])
   const [professorsSubjects, setProfessorsSubjects] = useState([])
   const [selectedProfessor, setSelectedProfessor] =useState('');
+  const [selectedUser, setSelectedUser] =useState('');
+  const [addUserSubjectRecord, setAddUserSubjectRecord]= useState(false)
 
   const subjectsOfProfessor = async (professorId) => {
     try {
@@ -79,12 +82,19 @@ const Admin = () => {
   }
 
 
-  const showModalAndTableRecord = (record) => {
+  const showModalProfessorsSubjects = (record) => {
     console.log('prfe ',record);
     setSelectedProfessor(record);
     console.log('selecionado',selectedProfessor)
     setAddProfessorSubjectRecord(true);
     subjectsOfProfessor(record)
+  };
+
+  const showModalUsersSubjects = (record) => {
+    console.log('user ',record);
+    setSelectedUser(record);
+    console.log('selecionado',selectedUser)
+    setAddUserSubjectRecord(true);
   };
   
   const getSelected = async () => {
@@ -100,7 +110,7 @@ const Admin = () => {
   const getProfessorSubjects = async () => {
     try {
       const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
-      return ps
+      setProfessorsSubjects(ps);
       } catch(err) {
       console.log(err);
     }
@@ -233,6 +243,7 @@ const Admin = () => {
     getSubjects();
     getProfessors();
     getUsers();
+    getProfessorSubjects();
   })
 
 
@@ -304,11 +315,24 @@ const Admin = () => {
                                 <TableCell component="th" scope="row">
                                   {user.name}
                                 </TableCell>
+                                <TableCell component="th" scope="row">
+                                  <CustomButton text={'Add Subject to User'} handleClick={() => showModalUsersSubjects({user})}>
+                                    <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
+                                  </CustomButton>
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
                       </TableContainer>
+                      <Modal key={'modal'-selectedUser.id} open={addUserSubjectRecord} onClose={() => setAddUserSubjectRecord(false)}>
+                        <UserSubjectsModal
+                          destroyOnClose
+                          handleCloseUserSubject={() => setAddUserSubjectRecord(false)}
+                          users={users}
+                          professorsSubjects={professorsSubjects}
+                        />
+                      </Modal>
                     </Box>
                   )}
 
@@ -356,7 +380,7 @@ const Admin = () => {
                                   {prof.name}
                                 </TableCell>
                                 <TableCell component="th" scope="row">
-                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => showModalAndTableRecord({prof})}>
+                                  <CustomButton text={'Add Subject to Professor'} handleClick={() => showModalProfessorsSubjects({prof})}>
                                     <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                                   </CustomButton>
                                 </TableCell>
@@ -431,7 +455,7 @@ const Admin = () => {
                     </Box>
                   )}
 
-                    <div>
+                    {/* <div>
                       <FormControl fullWidth>
                         <InputLabel id="subjectsList">Subjects</InputLabel>
                         <Select
@@ -470,7 +494,7 @@ const Admin = () => {
                         </Select>
                       </FormControl>
                       
-                    </div>
+                    </div> */}
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>

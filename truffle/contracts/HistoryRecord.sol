@@ -10,6 +10,8 @@ contract HistoryRecord {
   Subject[] subjects;
   address[] professorsList;
   address[] usersList;
+  ProfessorsSubjects[] public professorsSubjects;
+  Grades[] public grades;
 
   struct Record{
     uint id;
@@ -43,7 +45,7 @@ contract HistoryRecord {
   }
 
   struct Grades {
-    uint id;
+    //uint id;
     address studentId;
     address subjectId;
     uint value;
@@ -70,11 +72,10 @@ contract HistoryRecord {
   mapping (address => Admin) public admins;
   mapping (address => User) public users;
   mapping (address => Professor) public professors;
-  mapping (uint => Grades) public grades;
-  ProfessorsSubjects[] professorsSubjects;
-  mapping (uint => ProfessorsStudents) public professorsStudents;
+  //mapping (uint => Grades) public grades;
+  //mapping (uint => ProfessorsStudents) public professorsStudents;
   //mapping (uint => ProfessorsSubjects) public professorsSubjects;
-  mapping (uint => StudentsSubjects) public studentsSubjects;
+  //mapping (uint => StudentsSubjects) public studentsSubjects;
 
   event AdminAdded(address adminId);
   event UserAdded(address userId);
