@@ -130,6 +130,7 @@ const Admin = () => {
     try {
       console.log(addUserAddress)
       await contract.methods.addUser(addUserAddress,addUserName).send({ from: accounts[0] })
+      setAddUserRecord(false)
     } catch (err) {
       console.error(err)
     }
