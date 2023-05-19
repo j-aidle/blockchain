@@ -63,7 +63,7 @@ const AddUserModal = ({ handleCloseUser, handleUploadUser }) => {
                       <Box display='flex' justifyContent='space-between' mb={2}>
                           <Box flexGrow={1} />
                           <CustomButton
-                              text='upload'
+                              text='Save'
                               handleClick={() => handleUploadUser(addUserAddress, addUserName)} />
                       </Box>
                   </Box>
