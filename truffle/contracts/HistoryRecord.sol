@@ -222,6 +222,26 @@ contract HistoryRecord {
   function getSubjects() public view returns(Subject[] memory) {
     return subjects;
   }
+
+  function getSubjectsOfProfessor(address _professorId) public view returns(Subject[] memory) {
+    Subject[] memory sub = new Subject[](subjects.length);
+      for (uint i = 0; i < professorsSubjects.length; i++) {
+        if (professorsSubjects[i].professorId == _professorId) {
+          for (uint256 k = 0; k < subjects.length; k++) {
+            if (professorsSubjects[i].subjectId == subjects[k].id) {
+                sub[i].id = professorsSubjects[i].subjectId;
+                sub[i].name = subjects[k].name;
+            }
+          }
+        }
+      }
+      return sub;
+  }
+
+  /*function getStudentsOfProfessor(address _professorId, uint _subjectId) public view returns(User[] memory) {
+    User[] memory us = new User[](countUsers);
+    return us;
+  }*/
   
   function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
     Record memory record = Record(getCountRecords(_userId),_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
