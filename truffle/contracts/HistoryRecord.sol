@@ -90,6 +90,7 @@ contract HistoryRecord {
   event ProfessorSubjectsDeleted(address _professorId,uint _subjectId);
   event StudentSubjectsAdded(address _studentId,address _professorId,uint _subjectId);
   event StudentSubjectsDeleted(address _studentId,address _professorId,uint _subjectId);
+  event GradeAdded(uint _studentSubjectsId, string _description, uint _value);
   
   // modifiers
 
@@ -109,6 +110,15 @@ contract HistoryRecord {
   }
   
   // functions
+  function addGrade(uint _studentSubjectsId, string memory _description, uint _value) public {
+    grades.push(Grades(_studentSubjectsId,_description,_value,block.timestamp));
+    emit GradeAdded(_studentSubjectsId, _description, _value);
+  }
+
+  function getGrades() public view returns(Grades[] memory) {
+    return grades;
+  }
+
   function addStudentSubjects(address _studentId, address _professorId, uint _subjectId) public {
     studentsSubjects.push(StudentsSubjects(countStudentSubjects,_studentId,_professorId,_subjectId));
     countStudentSubjects++;

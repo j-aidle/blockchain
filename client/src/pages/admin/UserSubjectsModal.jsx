@@ -34,9 +34,9 @@ const UserSubjectsModal = ({
   } = useEth();
   const { setAlert } = useAlert();
   const [selected, setSelected] = React.useState([]);
-  const isSelected = (name) => {
+  const isSelected = (profId, subjectId) => {
     for (let i = 0; i < subjectsOfStudent.length; i++) {
-      if (subjectsOfStudent[i].id === name) {
+      if (subjectsOfStudent[i].professorId === profId && subjectsOfStudent[i].subjectId === subjectId ) {
         return subjectsOfStudent[i].selected;
       }
     }
@@ -103,9 +103,9 @@ const UserSubjectsModal = ({
     }
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, profId, subjectId) => {
     for (let i = 0; i < subjectsOfStudent.length; i++) {
-      if (subjectsOfStudent[i].id === name) {
+      if (subjectsOfStudent[i].professorId === profId && subjectsOfStudent[i].subjectId == subjectId) {
         if (subjectsOfStudent[i].selected === true) {
           subjectsOfStudent[i].selected = false;
         } else {
@@ -188,7 +188,7 @@ const UserSubjectsModal = ({
               </Typography>
             </Box>
           )}
-          {professorsSubjects.length > 0 && (
+          {subjectsOfStudent.length > 0 && (
             <Box my={2}>
               <Box display="flex" flexDirection="column" mt={3} mb={-2}>
                 <TableContainer component={Paper}>
@@ -199,13 +199,13 @@ const UserSubjectsModal = ({
                       rowCount={professorsSubjects.length}
                     />
                     <TableBody>
-                      {professorsSubjects.map((ps) => {
-                        const isItemSelected = isSelected(ps.id);
-                        const labelId = `enhanced-table-checkbox-${ps.id}`;
+                      {subjectsOfStudent.map((ps) => {
+                        const isItemSelected = isSelected(ps.professorId, ps.subjectId);
+                        const labelId = `enhanced-table-checkbox-${ps.professorId, ps.subjectId}`;
                         return (
                           <TableRow
                             key={ps.id}
-                            onClick={(event) => handleClick(event, ps.id)}
+                            onClick={(event) => handleClick(event, ps.professorId, ps.subjectId)}
                             selected={isItemSelected}
                             sx={{
                               "&:last-child td, &:last-child th": { border: 0 },
@@ -240,7 +240,7 @@ const UserSubjectsModal = ({
               </Box>
             </Box>
           )}
-          {professorsSubjects.length > 0 && (
+          {subjectsOfStudent.length > 0 && (
             <Box display="flex" justifyContent="space-between" mb={2}>
               <Box flexGrow={1} />
               <CustomButton text="Save" handleClick={saveSubjects} />
