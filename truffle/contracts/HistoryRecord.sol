@@ -89,7 +89,7 @@ contract HistoryRecord {
   event ProfessorSubjectsAdded(address _professorId,uint _subjectId);
   event ProfessorSubjectsDeleted(address _professorId,uint _subjectId);
   event StudentSubjectsAdded(address _studentId,address _professorId,uint _subjectId);
-  event StudentSubjectsDeleted(address _studentId,address _professorId,uint _subjectId);
+  event StudentSubjectsDeleted(uint _id);
   event GradeAdded(uint _studentSubjectsId, string _description, uint _value);
   
   // modifiers
@@ -125,14 +125,14 @@ contract HistoryRecord {
     emit StudentSubjectsAdded(_studentId,_professorId,_subjectId);
   }
 
-  function deleteStudentSubjects(address _studentId, address _professorId, uint _subjectId) public {
+  function deleteStudentSubjects(uint _id) public {
     for (uint i = 0; i < studentsSubjects.length; i++) {
-      if(studentsSubjects[i].studentId == _studentId && studentsSubjects[i].professorId == _professorId && studentsSubjects[i].subjectId == _subjectId){
+      if(studentsSubjects[i].id == _id){
         studentsSubjects[i] = studentsSubjects[studentsSubjects.length -1];
       }
     }
     studentsSubjects.pop();
-    emit StudentSubjectsDeleted(_studentId,_professorId,_subjectId);
+    emit StudentSubjectsDeleted(_id);
   }
 
   function getStudentSubjects() public view returns(StudentsSubjects[] memory) {

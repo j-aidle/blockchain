@@ -63,13 +63,14 @@ const Admin = () => {
       let arr = [];
       for (let k = 0; k < professorsSubjects.length; k++) {
        console.log(professorsSubjects[k])
-        arr.push({professorId:professorsSubjects[k].professorId,subjectId:professorsSubjects[k].subjectId, selected:false})          
+        arr.push({id: null, professorId:professorsSubjects[k].professorId,subjectId:professorsSubjects[k].subjectId, selected:false})          
       }
       console.log(arr)
       for(let i =0; i< ss.length; i++){
           if (ss[i].studentId ===student.user.id){
             for (let j = 0; j < arr.length; j++) {
               if(arr[j].professorId === ss[i].professorId && arr[j].subjectId === ss[i].subjectId) {
+                arr[j].id = ss[i].id;
                 arr[j].selected = true;
               }
             

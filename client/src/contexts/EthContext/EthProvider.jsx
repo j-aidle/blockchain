@@ -34,7 +34,7 @@ function EthProvider({ children }) {
   useEffect(() => {
     const tryInit = async () => {
       try {
-        const artifact = require('../../contracts/HistoryRecord.json')
+        const artifact = require('../../../../truffle/build/contracts/HistoryRecord.json')
         init(artifact)
       } catch (err) {
         console.error(err)

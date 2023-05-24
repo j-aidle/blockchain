@@ -69,6 +69,8 @@ const UserSubjectsModal = ({
         for (let i = 0; i < studentSubjects.length; i++) {
           console.log("iteration ps ", 1, " value ", studentSubjects[k]);
           if (
+            studentSubjects[i].studentId ===
+            subjectsOfStudent[k].studentId &&
             studentSubjects[i].professorId ===
               subjectsOfStudent[k].professorId &&
             studentSubjects[i].subjectId === subjectsOfStudent[k].subjectId
@@ -86,13 +88,17 @@ const UserSubjectsModal = ({
               subjectsOfStudent[k].subjectId
             )
             .send({ from: accounts[0] });
+            console.log('add',users.user.id,
+              subjectsOfStudent[k].professorId,
+              subjectsOfStudent[k].subjectId)
         }
-        if (subjectsOfStudent[k].selected === false && found) {
+        if (subjectsOfStudent[k].id !== null && subjectsOfStudent[k].selected === false && found) {
+          console.log('delete',users.user.id,
+          subjectsOfStudent[k].professorId,
+          subjectsOfStudent[k].subjectId)
           contract.methods
             .deleteStudentSubjects(
-              users.user.id,
-              subjectsOfStudent[k].professorId,
-              subjectsOfStudent[k].subjectId
+              subjectsOfStudent[k].id
             )
             .send({ from: accounts[0] });
         }
@@ -176,7 +182,7 @@ const UserSubjectsModal = ({
           <Typography variant="h4">
             Enrollment of Student {users.user.name}
           </Typography>
-          {professorsSubjects.length === 0 && (
+          {subjectsOfStudent.length === 0 && (
             <Box
               display="flex"
               alignItems="center"
@@ -199,12 +205,12 @@ const UserSubjectsModal = ({
                       rowCount={professorsSubjects.length}
                     />
                     <TableBody>
-                      {subjectsOfStudent.map((ps) => {
+                      {subjectsOfStudent.map((ps,index) => {
                         const isItemSelected = isSelected(ps.professorId, ps.subjectId);
                         const labelId = `enhanced-table-checkbox-${ps.professorId, ps.subjectId}`;
                         return (
                           <TableRow
-                            key={ps.id}
+                            key={index}
                             onClick={(event) => handleClick(event, ps.professorId, ps.subjectId)}
                             selected={isItemSelected}
                             sx={{
@@ -243,6 +249,9 @@ const UserSubjectsModal = ({
           {subjectsOfStudent.length > 0 && (
             <Box display="flex" justifyContent="space-between" mb={2}>
               <Box flexGrow={1} />
+              <CustomButton text="user" handleClick={() => console.log('user', users.user.id)} />
+              <CustomButton text="sof" handleClick={() => console.log('subjectsOfStudent', subjectsOfStudent)} />
+              <CustomButton text="ss" handleClick={() => console.log('studentSubjects', studentSubjects)} />
               <CustomButton text="Save" handleClick={saveSubjects} />
             </Box>
           )}
