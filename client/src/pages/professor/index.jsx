@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Backdrop, CircularProgress, Modal, generateUtilityClass } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Backdrop,
+  CircularProgress,
+  Modal,
+  generateUtilityClass,
+} from "@mui/material";
 import PropTypes from "prop-types";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -14,8 +21,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import useEth from "../../contexts/EthContext/useEth";
 import AddGradeModal from "./AddGradeModal";
-import CustomButton from '../../components/CustomButton'
-import moment from 'moment'
+import CustomButton from "../../components/CustomButton";
+import moment from "moment";
 
 const Professor = () => {
   const {
@@ -35,8 +42,9 @@ const Professor = () => {
   const [gradesList, setGradesList] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
-  const [selectedUser, setSelectedUser] =useState('');
-  const [addGradeRecord, setAddGradeRecord]=useState(false)
+  const [selectedUser, setSelectedUser] = useState("");
+  const [addGradeRecord, setAddGradeRecord] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState([]);
 
   useEffect(() => {
     getProfessorSubjects();
@@ -60,6 +68,10 @@ const Professor = () => {
     window.localStorage.setItem('subjects', subjects);
   }, [accounts,subjects]);
 */
+const showProfessorsSubjects = (ps) => {
+  setSelectedSubject(ps);
+  setOpen(!open);
+};
 
   const getUsers = async () => {
     try {
@@ -116,7 +128,7 @@ const Professor = () => {
       const ss = await contract.methods
         .getStudentSubjects()
         .call({ from: accounts[0] });
-        const g = await contract.methods.getGrades().call({ from: accounts[0] });
+      const g = await contract.methods.getGrades().call({ from: accounts[0] });
       let arr = [];
       for (let i = 0; i < ss.length; i++) {
         if (ss[i].professorId === accounts[0]) {
@@ -125,10 +137,24 @@ const Professor = () => {
               for (let j = 0; j < g.length; j++) {
                 if (ss[k].id == g[j].studentSubjectsId) {
                   //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
-                  subjectsProfessorList[k].students.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, grades: { id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  } });
-                }                
+                  subjectsProfessorList[k].students.push({
+                    id: ss[k].id,
+                    professorId: ss[i].professorId,
+                    subjectId: ss[k].subjectId,
+                    studentId: ss[i].studentId,
+                    grades: {
+                      id: ss[k].id,
+                      professorId: ss[k].professorId,
+                      subjectId: ss[k].subjectId,
+                      studentId: ss[i].studentId,
+                      description: g[j].description,
+                      value: g[j].value,
+                      time: g[j].momentAddition,
+                    },
+                  });
+                }
               }
-              
+
               //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
             }
           }
@@ -155,10 +181,18 @@ const Professor = () => {
             if (subjectsProfessorList[k].subjectId === ss[k].subjectId) {
               for (let j = 0; j < g.length; j++) {
                 if (ss[k].id == g[j].studentSubjectsId) {
-                  arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
-                }                
+                  arr.push({
+                    id: ss[k].id,
+                    professorId: ss[k].professorId,
+                    subjectId: ss[k].subjectId,
+                    studentId: ss[i].studentId,
+                    description: g[j].description,
+                    value: g[j].value,
+                    time: g[j].momentAddition,
+                  });
+                }
               }
-            }            
+            }
           }
         }
       }
@@ -196,9 +230,7 @@ const Professor = () => {
 
   const getGrades = async () => {
     try {
-      const g = await contract.methods
-        .getGrades()
-        .call({ from: accounts[0] });
+      const g = await contract.methods.getGrades().call({ from: accounts[0] });
       setGrades(g);
       //console.log('subjects', subj)
     } catch (err) {
@@ -207,12 +239,11 @@ const Professor = () => {
   };
 
   const showModalAddGrade = (record) => {
-    console.log('user ',record);
+    console.log("user ", record);
     setSelectedUser(record);
-    console.log('selecionado',selectedUser)
+    console.log("selecionado", selectedUser);
     setAddGradeRecord(true);
   };
-
 
   if (loading) {
     return (
@@ -290,144 +321,219 @@ const Professor = () => {
                             </TableRow>
                           </TableHead>
                           {subjectsProfessorList.map((ps) => (
-                          <><TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-                              <TableCell>
-                                <IconButton
-                                  aria-label="expand row"
-                                  size="small"
-                                  onClick={() => setOpen(!open)}
-                                >
-                                  {open ? (
-                                    <KeyboardArrowUpIcon />
-                                  ) : (
-                                    <KeyboardArrowDownIcon />
-                                  )}
-                                </IconButton>
-                              </TableCell>
-
-                              <TableCell component="th" scope="row">
-                                {subjects.map((subj) => {
-                                  if (subj.id === ps.subjectId) {
-                                    return subj.name;
-                                  }
-                                })}
-                              </TableCell>
-                            </TableRow>
-                            <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+                            <>
+                              <TableRow
+                                key={ps}
+                                sx={{ "& > *": { borderBottom: "unset" } }}
+                              >
                                 <TableCell>
                                   <IconButton
-                                    aria-label="expand row2"
+                                    aria-label="expand row"
                                     size="small"
-                                    onClick={() => setOpen2(!open2)}
+                                    //onClick={() => setOpen(!open)}
+                                    onclick={showProfessorsSubjects(ps)}
                                   >
-                                    {open2 ? (
+                                    {open ? (
                                       <KeyboardArrowUpIcon />
                                     ) : (
                                       <KeyboardArrowDownIcon />
                                     )}
                                   </IconButton>
                                 </TableCell>
-                                <TableCell
-                                  style={{ paddingBottom: 0, paddingTop: 0 }}
-                                  colSpan={6}
-                                >
-                                  <Collapse in={open} timeout="auto" unmountOnExit>
-                                  {ps.students.map((std) => (
-                                    <><Box sx={{ margin: 1 }}>
-                                      <Typography
-                                        variant="h6"
-                                        gutterBottom
-                                        component="div"
+
+                                <TableCell component="th" scope="row">
+                                  {subjects.map((subj) => {
+                                    if (subj.id === ps.subjectId) {
+                                      return subj.name;
+                                    }
+                                  })}
+                                </TableCell>
+                              </TableRow>
+                              {ps.students.map((std) => (
+                                <>
+                                  <TableRow
+                                    sx={{ "& > *": { borderBottom: "unset" } }}
+                                  >
+                                    <TableCell>
+                                      <IconButton
+                                        aria-label="expand row2"
+                                        size="small"
+                                        onClick={() => setOpen2(!open2)}
                                       >
-                                        Students
-                                      </Typography>
-                                      <Table size="small" aria-label="purchases">
-                                        <TableHead>
-                                          <TableRow>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell></TableCell>
-                                          </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                          <TableBody>
-
-                                            <><TableCell component="th" scope="row">
-                                              {users.map((us) => {
-                                                if (us.id === std.studentId) {
-                                                  return us.name;
-                                                }
-                                              })}
-
-                                            </TableCell><TableCell>
-                                                <CustomButton text={'Add Grade'} handleClick={() => showModalAddGrade({ std })} />
-                                              </TableCell></>
-                                          </TableBody>
-                                        </TableBody>
-                                      </Table>
-                                    </Box><TableRow>
-                                        <TableCell
-                                          style={{ paddingBottom: 0, paddingTop: 0 }}
-                                          colSpan={6}
-                                        >
-                                          <Collapse in={open2} timeout="auto" unmountOnExit>
-                                            <Box sx={{ margin: 1 }}>
-                                              <Typography
-                                                variant="h6"
-                                                gutterBottom
-                                                component="div"
-                                              >
-                                                Grades
-                                              </Typography>
-                                              <Table size="small" aria-label="purchases">
-                                                <TableHead>
-                                                  <TableRow>
-                                                    <TableCell>Subject</TableCell>
-                                                    <TableCell>Description</TableCell>
-                                                    <TableCell>Value</TableCell>
-                                                    <TableCell>Created Time</TableCell>
-                                                  </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                  {ps.std.grades.map((g) => (
+                                        {open2 ? (
+                                          <KeyboardArrowUpIcon />
+                                        ) : (
+                                          <KeyboardArrowDownIcon />
+                                        )}
+                                      </IconButton>
+                                    </TableCell>
+                                    <TableCell
+                                      style={{
+                                        paddingBottom: 0,
+                                        paddingTop: 0,
+                                      }}
+                                      colSpan={6}
+                                    >
+                                      <Collapse
+                                        in={open}
+                                        timeout="auto"
+                                        unmountOnExit
+                                      >
+                                        <Box sx={{ margin: 1 }}>
+                                          <Typography
+                                            variant="h6"
+                                            gutterBottom
+                                            component="div"
+                                          >
+                                            Students
+                                          </Typography>
+                                          <Table
+                                            size="small"
+                                            aria-label="purchases"
+                                          >
+                                            <TableHead>
+                                              <TableRow>
+                                                <TableCell>Name</TableCell>
+                                                <TableCell></TableCell>
+                                              </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                              <TableBody>
+                                                <>
+                                                  <TableCell
+                                                    component="th"
+                                                    scope="row"
+                                                  >
+                                                    {users.map((us) => {
+                                                      if (
+                                                        us.id === std.studentId
+                                                      ) {
+                                                        return us.name;
+                                                      }
+                                                    })}
+                                                  </TableCell>
+                                                  <TableCell>
+                                                    <CustomButton
+                                                      text={"Add Grade"}
+                                                      handleClick={() =>
+                                                        showModalAddGrade({
+                                                          std,
+                                                        })
+                                                      }
+                                                    />
+                                                  </TableCell>
+                                                </>
+                                              </TableBody>
+                                            </TableBody>
+                                          </Table>
+                                        </Box>
+                                        <TableRow>
+                                          <TableCell
+                                            style={{
+                                              paddingBottom: 0,
+                                              paddingTop: 0,
+                                            }}
+                                            colSpan={6}
+                                          >
+                                            <Collapse
+                                              in={open2}
+                                              timeout="auto"
+                                              unmountOnExit
+                                            >
+                                              <Box sx={{ margin: 1 }}>
+                                                <Typography
+                                                  variant="h6"
+                                                  gutterBottom
+                                                  component="div"
+                                                >
+                                                  Grades
+                                                </Typography>
+                                                <Table
+                                                  size="small"
+                                                  aria-label="purchases"
+                                                >
+                                                  <TableHead>
                                                     <TableRow>
-                                                      <TableCell component="th" scope="row">
-                                                        {subjects.map((sub) => {
-                                                          if (g.subjectId === sub.id) {
-                                                            return sub.name;
-                                                          }
-                                                        })}
+                                                      <TableCell>
+                                                        Subject
                                                       </TableCell>
-                                                      <TableCell component="th" scope="row">
-                                                        {g.description}
+                                                      <TableCell>
+                                                        Description
                                                       </TableCell>
-                                                      <TableCell component="th" scope="row">
-                                                        {g.value}
+                                                      <TableCell>
+                                                        Value
                                                       </TableCell>
-                                                      <TableCell component="th" scope="row">
-                                                        {moment.unix(g.time).format('DD-MM-YYYY HH:mm')}
+                                                      <TableCell>
+                                                        Created Time
                                                       </TableCell>
                                                     </TableRow>
-                                                  ))}
-                                                </TableBody>
-                                              </Table>
-                                            </Box>
-                                            ))}
-                                          </Collapse>
-                                        </TableCell>
-                                      </TableRow></>
-                                  </Collapse>
-                                </TableCell>
-                              </TableRow></>                        
+                                                  </TableHead>
+                                                  <TableBody>
+                                                    {std.grades.map((g) => (
+                                                      <TableRow>
+                                                        <TableCell
+                                                          component="th"
+                                                          scope="row"
+                                                        >
+                                                          {subjects.map(
+                                                            (sub) => {
+                                                              if (
+                                                                g.subjectId ===
+                                                                sub.id
+                                                              ) {
+                                                                return sub.name;
+                                                              }
+                                                            }
+                                                          )}
+                                                        </TableCell>
+                                                        <TableCell
+                                                          component="th"
+                                                          scope="row"
+                                                        >
+                                                          {g.description}
+                                                        </TableCell>
+                                                        <TableCell
+                                                          component="th"
+                                                          scope="row"
+                                                        >
+                                                          {g.value}
+                                                        </TableCell>
+                                                        <TableCell
+                                                          component="th"
+                                                          scope="row"
+                                                        >
+                                                          {moment
+                                                            .unix(g.time)
+                                                            .format(
+                                                              "DD-MM-YYYY HH:mm"
+                                                            )}
+                                                        </TableCell>
+                                                      </TableRow>
+                                                    ))}
+                                                  </TableBody>
+                                                </Table>
+                                              </Box>
+                                            </Collapse>
+                                          </TableCell>
+                                        </TableRow>
+                                      </Collapse>
+                                    </TableCell>
+                                  </TableRow>
+                                </>
+                              ))}
+                            </>
                           ))}
-                                                   <Modal key={'modal'-selectedUser.id} open={addGradeRecord} onClose={() => setAddGradeRecord(false)}>
+                          <Modal
+                            key={"modal" - selectedUser.id}
+                            open={addGradeRecord}
+                            onClose={() => setAddGradeRecord(false)}
+                          >
                             <AddGradeModal
                               destroyOnClose
                               handleCloseGrade={() => setAddGradeRecord(false)}
                               users={selectedUser}
                             />
-                          </Modal>                          
-                          
-
+                          </Modal>
                         </Table>
                       </TableContainer>
                     </React.Fragment>

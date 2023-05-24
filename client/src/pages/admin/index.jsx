@@ -21,6 +21,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import moment from 'moment'
 
 
 const Admin = () => {
@@ -35,7 +36,7 @@ const Admin = () => {
   const [addUserAddress, setAddUserAddress] = useState('')
   const [addUserName, setAddUserName] = useState('')
   const [addUserRecord, setAddUserRecord] = useState('')
-  const [records, setRecords] = useState([])
+  const [grades, setGrades] = useState([])
   const [addRecord, setAddRecord] = useState(false)
   const [addProfessorRecord, setAddProfessorRecord] = useState(false)
   const [addProfessorAddress] = useState('')
@@ -155,9 +156,37 @@ const Admin = () => {
       }
       const userExists = await contract.methods.getUserExists(searchUserAddress).call({ from: accounts[0] })
       if (userExists) {
-        const records = await contract.methods.getRecords(searchUserAddress).call({ from: accounts[0] })
-        console.log('records :>> ', records)
-        setRecords(records)
+        //const records = await contract.methods.getRecords(searchUserAddress).call({ from: accounts[0] })
+        const ss = await contract.methods
+        .getStudentSubjects()
+        .call({ from: accounts[0] });
+      const subject = await contract.methods
+        .getSubjects()
+        .call({ from: accounts[0] });
+      const professors = await contract.methods
+        .getProfessors()
+        .call({ from: accounts[0] });
+      const students = await contract.methods
+        .getUsers()
+        .call({ from: accounts[0] });
+      const g = await contract.methods.getGrades().call({ from: accounts[0] });
+        console.log('records :>> ', g)
+        let arr = [];
+        for (let j = 0; j < g.length; j++) {
+          for (let i = 0; i < professors.length; i++) {
+            if (professors[i].id === ss[g[j].studentSubjectsId].professorId && searchUserAddress === ss[g[j].studentSubjectsId].studentId) {
+              arr.push({
+                id: g[j].id,
+                professorId: professors[i].name,
+                subjectId: subject[ss[g[j].studentSubjectsId].subjectId].name,
+                description: g[j].description,
+                value: g[j].value,
+                time: g[j].momentAddition,
+              });
+            }
+          }
+        }
+        setGrades(arr)
         setUserExist(true)
       } else {
         setAlert('User does not exist', 'error')
@@ -260,7 +289,7 @@ const Admin = () => {
 
           // refresh records
           const records = await contract.methods.getRecords(userAddress).call({ from: accounts[0] })
-          setRecords(records)
+          setGrades(records)
       } catch (err) {
         setAlert('Record upload failed', 'error')
         console.log('subject :>> ',subjectName)
@@ -562,19 +591,51 @@ const Admin = () => {
                     </CustomButton>
                   </Box>
 
-                  {userExist && records.length === 0 && (
+                  {userExist && grades.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
                       <Typography variant='h5'>No records found</Typography>
                     </Box>
                   )}
 
-                  {userExist && records.length > 0 && (
+                  {userExist && grades.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
-                      {records.map((record,index) => (
-                        <Box mb={2} key={index}>
-                          <Record key={index} record={record} />
+                        <Box mb={2}>
+                          {/* <Record key={index} record={record} /> */}
+                          <React.Fragment>
+                      <TableContainer component={Paper}>
+                        <Table size="small" aria-label="purchases">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Subject</TableCell>
+                              <TableCell>Description</TableCell>
+                              <TableCell>Value</TableCell>
+                              <TableCell>Created Time</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {grades.map((g) => (
+                              <TableRow>
+                                <TableCell component="th" scope="row">
+                                  {g.subjectId}
+                                </TableCell>
+                                <TableCell component="th" scope="row">
+                                  {g.description}
+                                </TableCell>
+                                <TableCell component="th" scope="row">
+                                  {g.value}
+                                </TableCell>
+                                <TableCell component="th" scope="row">
+                                  {moment
+                                    .unix(g.time)
+                                    .format("DD-MM-YYYY HH:mm")}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </React.Fragment>
                         </Box>
-                      ))}
                     </Box>
                   )}
       
