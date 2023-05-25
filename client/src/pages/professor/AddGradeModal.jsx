@@ -5,7 +5,7 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
 import useEth from '../../contexts/EthContext/useEth'
 
-const AddGradeModal = ({  handleCloseGrade, users }) => {
+const AddGradeModal = ({  handleCloseGrade, users, updateGrades }) => {
   const {
     state: { contract, accounts },
   } = useEth();
@@ -17,6 +17,7 @@ const AddGradeModal = ({  handleCloseGrade, users }) => {
     try {
       console.log('id',users.std.id)
       contract.methods.addGrade(users.std.id,addDescription,addValue).send({ from: accounts[0] });
+      updateGrades(users.std);
       handleCloseGrade();
     } catch (err) {
       console.error(err);
