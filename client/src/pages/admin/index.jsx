@@ -186,7 +186,18 @@ const Admin = () => {
             }
           }
         }
-        setGrades(arr)
+
+        function compare (a,b)  {
+          if ( a.subjectId < b.subjectId ){
+            return -1;
+          }
+          if ( a.subjectId > b.subjectId ){
+            return 1;
+          }
+          return 0;
+        }
+
+        setGrades(arr.sort(compare))
         setUserExist(true)
       } else {
         setAlert('User does not exist', 'error')
@@ -609,7 +620,7 @@ const Admin = () => {
                               <TableCell>Subject</TableCell>
                               <TableCell>Description</TableCell>
                               <TableCell>Value</TableCell>
-                              <TableCell>Created Time</TableCell>
+                              <TableCell>Creation Time</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>

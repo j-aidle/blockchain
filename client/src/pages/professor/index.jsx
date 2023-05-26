@@ -42,6 +42,8 @@ const Professor = () => {
   const [gradesList, setGradesList] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [openList, setOpenList] = useState([]);
+  const [openList2, setOpenList2] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
   const [addGradeRecord, setAddGradeRecord] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState([]);
@@ -51,6 +53,8 @@ const Professor = () => {
     getProfessorSubjects();
     console.log("account ", accounts[0]);
     getStudentSubjects();
+    loadOpenList();
+    loadOpenList2();
     subjectsOfProfessor();
     console.log("sub prof list", subjectsProfessorList);
     // setSubjects(JSON.parse(window.localStorage.getItem('subjects')));
@@ -59,6 +63,8 @@ const Professor = () => {
   useEffect(() => {
     getSubjects();
     getUsers();
+    subjectsOfProfessor();
+
     //gradesOfStudent();
 
    // studentsOfProfessor();
@@ -72,7 +78,7 @@ const Professor = () => {
 const showProfessorsSubjects = (ps) => {
   setSelectedSubject(ps);
   console.log(ps)
-  ps.open = !ps.open;
+  openList[ps.subjectId].open = !openList[ps.subjectId].open;
   console.log(ps)
   setOpen(!open);
 };
@@ -80,11 +86,10 @@ const showProfessorsSubjects = (ps) => {
 const showStudentsSubjects = (s) => {
   setSelectedStudent(s);
   console.log(s)
-  s.open2 = !s.open2;
+  openList2[s.id].open2 = !openList2[s.id].open2;
   console.log(s)
   setOpen2(!open2);
-};
-
+}; 
   const getUsers = async () => {
     try {
       const us = await contract.methods.getUsers().call({ from: accounts[0] });
@@ -116,6 +121,36 @@ const showStudentsSubjects = (s) => {
     }
   };
 
+  const loadOpenList = async () =>  {
+    try {
+      const ps = await contract.methods
+        .getProfessorSubjects()
+        .call({ from: accounts[0] });
+    for (let i = 0; i < ps.length; i++) { 
+      if (ps[i].professorId === accounts[0]) {
+        openList.push({subjectId: ps[i].subjectId, open: false})
+      }
+    }
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  const loadOpenList2 = async () => {
+    try {
+      const ss = await contract.methods
+        .getStudentSubjects()
+        .call({ from: accounts[0] });
+    for (let i = 0; i < ss.length; i++) { 
+      if (ss[i].professorId === accounts[0]) {
+        openList2.push({id: ss[i].id, open2: false})
+      }
+    }
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
   const subjectsOfProfessor = async () => {
     try {
       const ps = await contract.methods
@@ -130,7 +165,7 @@ const showStudentsSubjects = (s) => {
       let variable2;
       for (let i = 0; i < ps.length; i++) {
         if (ps[i].professorId === accounts[0]) {
-           variable = arr.push({ open: true, subjectId: ps[i].subjectId, students: [] });
+           variable = arr.push({subjectId: ps[i].subjectId, students: [] });
             for (let j = 0; j < ss.length; j++) {
               if (ss[j].professorId === accounts[0] && ps[i].subjectId === ss[j].subjectId) {
                 variable2 = arr[variable-1].students.push({
@@ -161,6 +196,8 @@ const showStudentsSubjects = (s) => {
         }
         }
       }
+
+      //console.log('openlist',openList)
       //console.log('ps',ps)
       //console.log('ss',ss)
       //console.log('g',g)
@@ -214,102 +251,6 @@ const showStudentsSubjects = (s) => {
 
   }
 
-  /*const studentsOfProfessor = async () => {
-    try {
-      const ss = await contract.methods
-        .getStudentSubjects()
-        .call({ from: accounts[0] });
-      const g = await contract.methods.getGrades().call({ from: accounts[0] });
-      let arr = [];
-      let variable;
-      console.log('code ss', ss)
-      console.log('code g', g)
-      console.log("code sub of prof list", subjectsProfessorList);
-      for (let k = 0; k < subjectsProfessorList.length; k++) {
-          for (let i = 0; i < ss.length; i++) {
-            if (ss[i].professorId === accounts[0] && subjectsProfessorList[k].subjectId === ss[i].subjectId) {
-              variable = subjectsProfessorList[k].students.push({
-                id: ss[i].id,
-                professorId: ss[i].professorId,
-                subjectId: ss[i].subjectId,
-                studentId: ss[i].studentId,
-                grades: [],
-              });
-              for (let j = 0; j < g.length; j++) {
-                if (ss[i].id == g[j].studentSubjectsId) {
-                  //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
-                  subjectsProfessorList[k].students[variable-1].grades.push({
-                      id: ss[i].id,
-                      professorId: ss[i].professorId,
-                      subjectId: ss[i].subjectId,
-                      studentId: ss[i].studentId,
-                      description: g[j].description,
-                      value: g[j].value,
-                      time: g[j].momentAddition,
-                  });
-                }
-              }
-              
-              //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
-            }
-
-        }
-      }
-      //console.log(arr);
-      setStudentsProfessorList(arr);
-      //console.log("sub of prof list", subjectsProfessorList);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const gradesOfStudent = async () => {
-    try {
-      const ss = await contract.methods
-        .getStudentSubjects()
-        .call({ from: accounts[0] });
-      const g = await contract.methods.getGrades().call({ from: accounts[0] });
-      let arr = [];
-      for (let i = 0; i < ss.length; i++) {
-        if (ss[i].professorId === accounts[0]) {
-          for (let k = 0; k < subjectsProfessorList.length; k++) {
-            if (subjectsProfessorList[k].subjectId === ss[k].subjectId) {
-              for (let j = 0; j < g.length; j++) {
-                if (ss[k].id == g[j].studentSubjectsId) {
-                  arr.push({
-                    id: ss[k].id,
-                    professorId: ss[k].professorId,
-                    subjectId: ss[k].subjectId,
-                    studentId: ss[i].studentId,
-                    description: g[j].description,
-                    value: g[j].value,
-                    time: g[j].momentAddition,
-                  });
-                }
-              }
-            }
-          }
-        }
-      }
-      //console.log(arr);
-      setGradesList(arr);
-      //console.log("sub of prof list", subjectsProfessorList);
-    } catch (err) {
-      console.log(err);
-    }
-  };*/
-
-  /*const subjectsOfProfessor = async () => {
-    try {
-      const ps = await contract.methods
-        .getSubjectsOfProfessor(accounts[0])
-        .call({ from: accounts[0] });
-      setSubjectsProfessorList(ps);
-      console.log("sub of prof list", subjectsProfessorList);
-    } catch (err) {
-      console.log(err);
-    }
-  };*/
 
   const getSubjects = async () => {
     try {
@@ -430,7 +371,7 @@ const showStudentsSubjects = (s) => {
                                     //onClick={() => setOpen(!open)}
                                     onClick={() => {showProfessorsSubjects(ps)}}
                                   >
-                                    {ps.open ? (
+                                    {openList[ps.subjectId].open ? (
                                       <KeyboardArrowUpIcon />
                                     ) : (
                                       <KeyboardArrowDownIcon />
@@ -439,6 +380,7 @@ const showStudentsSubjects = (s) => {
                                 </TableCell>
 
                                 <TableCell component="th" scope="row">
+                                  {ps.subjectId}
                                   {subjects.map((subj) => {
                                     if (subj.id === ps.subjectId) {
                                       return subj.name;
@@ -451,20 +393,6 @@ const showStudentsSubjects = (s) => {
                                   <TableRow
                                     sx={{ "& > *": { borderBottom: "unset" } }}
                                   >
-                                    <TableCell>
-                                      <IconButton
-                                        aria-label="expand row2"
-                                        size="small"
-                                        //onClick={() => setOpen2(!open2)}
-                                        onClick={() => showStudentsSubjects(std)}
-                                      >
-                                        {std.open2 ? (
-                                          <KeyboardArrowUpIcon />
-                                        ) : (
-                                          <KeyboardArrowDownIcon />
-                                        )}
-                                      </IconButton>
-                                    </TableCell>
                                     <TableCell
                                       style={{
                                         paddingBottom: 0,
@@ -473,7 +401,7 @@ const showStudentsSubjects = (s) => {
                                       colSpan={6}
                                     >
                                       <Collapse
-                                        in={ps.open}
+                                        in={openList[ps.subjectId].open}
                                         timeout="auto"
                                         unmountOnExit
                                       >
@@ -520,6 +448,20 @@ const showStudentsSubjects = (s) => {
                                                       }
                                                     />
                                                   </TableCell>
+                                                  <TableCell>
+                                                    <IconButton
+                                                      aria-label="expand row2"
+                                                      size="small"
+                                                      //onClick={() => setOpen2(!open2)}
+                                                      onClick={() => showStudentsSubjects(std)}
+                                                    >
+                                                      {openList2[std.id].open2 ? (
+                                                        <KeyboardArrowUpIcon />
+                                                      ) : (
+                                                        <KeyboardArrowDownIcon />
+                                                      )}
+                                                    </IconButton>
+                                                  </TableCell>
                                                 </>
                                               </TableBody>
                                             </TableBody>
@@ -534,7 +476,7 @@ const showStudentsSubjects = (s) => {
                                             colSpan={6}
                                           >
                                             <Collapse
-                                              in={std.open2}
+                                              in={openList2[std.id].open2}
                                               timeout="auto"
                                               unmountOnExit
                                             >
@@ -562,7 +504,7 @@ const showStudentsSubjects = (s) => {
                                                         Value
                                                       </TableCell>
                                                       <TableCell>
-                                                        Created Time
+                                                        Creation Time
                                                       </TableCell>
                                                     </TableRow>
                                                   </TableHead>
@@ -630,7 +572,7 @@ const showStudentsSubjects = (s) => {
                               destroyOnClose
                               handleCloseGrade={() => setAddGradeRecord(false)}
                               users={selectedUser}
-                              updateGrades={updateGrades}
+                              updateGrades={subjectsOfProfessor}
                             />
                           </Modal>
                         </Table>

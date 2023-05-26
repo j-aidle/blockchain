@@ -58,7 +58,7 @@ const User = () => {
 
       for (let j = 0; j < g.length; j++) {
         for (let i = 0; i < professors.length; i++) {
-          if (professors[i].id == ss[g[j].studentSubjectsId].professorId) {
+          if (professors[i].id == ss[g[j].studentSubjectsId].professorId && accounts[0] === ss[g[j].studentSubjectsId].studentId) {
             arr.push({
               id: g[j].id,
               professorId: professors[i].name,
@@ -71,8 +71,18 @@ const User = () => {
         }
       }
 
-      console.log(arr);
-      setGradesList(arr);
+      function compare (a,b)  {
+        if ( a.subjectId < b.subjectId ){
+          return -1;
+        }
+        if ( a.subjectId > b.subjectId ){
+          return 1;
+        }
+        return 0;
+      }
+
+      console.log(arr.sort(compare));
+      setGradesList(arr.sort(compare));
       //console.log("sub of prof list", subjectsProfessorList);
     } catch (err) {
       console.log(err);
@@ -145,7 +155,7 @@ const User = () => {
                               <TableCell>Subject</TableCell>
                               <TableCell>Description</TableCell>
                               <TableCell>Value</TableCell>
-                              <TableCell>Created Time</TableCell>
+                              <TableCell>Creation Time</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>

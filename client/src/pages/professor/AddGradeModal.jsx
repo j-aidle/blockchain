@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomButton from '../../components/CustomButton'
 import { Box, FormControl, TextField, IconButton, Typography } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
@@ -17,12 +17,17 @@ const AddGradeModal = ({  handleCloseGrade, users, updateGrades }) => {
     try {
       console.log('id',users.std.id)
       contract.methods.addGrade(users.std.id,addDescription,addValue).send({ from: accounts[0] });
-      updateGrades(users.std);
+      updateGrades();
       handleCloseGrade();
     } catch (err) {
       console.error(err);
     }
   }
+
+  useEffect(()=>{
+    saveGrade();
+    updateGrades();
+  },[])
 
   return (
     <Box
