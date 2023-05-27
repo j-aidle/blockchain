@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Backdrop, CircularProgress } from "@mui/material";
 import useEth from "../../contexts/EthContext/useEth";
-import Record from "../../components/Record";
 import moment from "moment";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,23 +15,8 @@ const User = () => {
     state: { contract, accounts, role, loading },
   } = useEth();
 
-  const [records, setRecords] = useState([]);
-  const [loadingRecords, setLoadingRecords] = useState(true);
   const [gradesList, setGradesList] = useState([]);
 
-  /*useEffect(() => {
-    const getRecords = async () => {
-      try {
-        const records = await contract.methods.getRecords(accounts[0]).call({ from: accounts[0] })
-        setRecords(records)
-        setLoadingRecords(false)
-      } catch (err) {
-        console.error(err)
-        setLoadingRecords(false)
-      }
-    }
-    getRecords()
-  })*/
   useEffect(() => {
     gradesOfStudent();
     console.log(gradesList);

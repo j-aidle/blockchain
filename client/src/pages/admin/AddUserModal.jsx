@@ -39,7 +39,7 @@ const AddUserModal = ({ handleCloseUser, handleUploadUser }) => {
                       </IconButton>
                   </Box>
                   <Box display='flex' flexDirection='column' my={1}>
-                      <Typography variant='h4'>Add User</Typography>
+                      <Typography variant='h4'>Add Student</Typography>
                       <Box my={2}>
                           <FormControl fullWidth>
                               <TextField

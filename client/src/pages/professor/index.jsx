@@ -241,9 +241,6 @@ const showStudentsSubjects = (s) => {
 
     }
     setSubjectsProfessorList(arr);
-    useEffect(() => {
-      subjectsOfProfessor();
-    }, []);
 
 } catch (err) {
   console.error(err);
@@ -380,7 +377,6 @@ const showStudentsSubjects = (s) => {
                                 </TableCell>
 
                                 <TableCell component="th" scope="row">
-                                  {ps.subjectId}
                                   {subjects.map((subj) => {
                                     if (subj.id === ps.subjectId) {
                                       return subj.name;

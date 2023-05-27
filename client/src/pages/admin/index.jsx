@@ -1,19 +1,16 @@
 import { Box, Divider, FormControl, Modal, TextField, Typography, Backdrop, CircularProgress, MenuItem, InputLabel, Select } from '@mui/material'
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useState} from 'react'
 import CustomButton from '../../components/CustomButton'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import useEth from '../../contexts/EthContext/useEth'
 import PersonAddAlt1RoundedIcon from '@mui/icons-material/PersonAddAlt1Rounded'
 import useAlert from '../../contexts/AlertContext/useAlert'
-import AddRecordModal from './AddRecordModal'
 import AddProfessorModal from './AddProfessorModal'
 import AddSubjectModal from './AddSubjectModal'
 import AddUserModal from './AddUserModal'
 import ProfessorSubjectsModal from './ProfessorSubjectsModal'
 import UserSubjectsModal from './UserSubjectsModal'
-import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded'
-import Record from '../../components/Record'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -37,7 +34,6 @@ const Admin = () => {
   const [addUserName, setAddUserName] = useState('')
   const [addUserRecord, setAddUserRecord] = useState('')
   const [grades, setGrades] = useState([])
-  const [addRecord, setAddRecord] = useState(false)
   const [addProfessorRecord, setAddProfessorRecord] = useState(false)
   const [addProfessorAddress] = useState('')
   const [addProfessorName] = useState('')
@@ -287,29 +283,6 @@ const Admin = () => {
     }
   }
 
-  const addRecordCallback = useCallback(
-    async (subjectName, subjectValue, userAddress) => {
-      if (!userAddress) {
-        setAlert('Please search for a patient first', 'error')
-        return
-      }
-      try {
-          await contract.methods.addRecord(subjectName,subjectValue, userAddress).send({ from: accounts[0] })
-          setAlert('New record uploaded', 'success')
-          setAddRecord(false)
-
-          // refresh records
-          const records = await contract.methods.getRecords(userAddress).call({ from: accounts[0] })
-          setGrades(records)
-      } catch (err) {
-        setAlert('Record upload failed', 'error')
-        console.log('subject :>> ',subjectName)
-        console.log('value :>> ', subjectValue)
-        console.error(err)
-      }
-    },
-    [setAlert, contract, accounts]
-  )
   useEffect(() => {
     getSubjects();
     getProfessors();
@@ -348,7 +321,7 @@ const Admin = () => {
                   </Box>
 
                   <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
-                    <Typography variant='h4'>Register User</Typography>
+                    <Typography variant='h4'>Register Student</Typography>
                     <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
                       <AddUserModal
                         handleCloseUser={() => setAddUserRecord(false)}
@@ -357,14 +330,14 @@ const Admin = () => {
                         addUserName={addUserName}
                       />
                     </Modal>
-                    <CustomButton text={'New User'} handleClick={() => setAddUserRecord(true)}>
+                    <CustomButton text={'New Student'} handleClick={() => setAddUserRecord(true)}>
                       <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
                   </Box>
 
                   {users.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
-                      <Typography variant='h5'>No Users found</Typography>
+                      <Typography variant='h5'>No Students found</Typography>
                     </Box>
                   )}
 
@@ -374,7 +347,7 @@ const Admin = () => {
                         <Table sx={{ minWidth: 650 }} aria-label="users table">
                           <TableHead>
                             <TableRow>
-                              <TableCell>Subject Name</TableCell>
+                              <TableCell>Student Name</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -525,61 +498,11 @@ const Admin = () => {
                     </Box>
                   )}
 
-                    {/* <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="subjectsList">Subjects</InputLabel>
-                        <Select
-                          labelId="demo-subjectsList"
-                          id="demo-simple-select"
-                          value={0}
-                          label="Subject"
-                          onLoad={() => getSubjects()}
-                          //onChange={handleChange}
-                        >
-                          {
-                            subjects.map((subject) => (
-                              <MenuItem value={subject.id}>{subject.name}</MenuItem>                              
-                            )
-                          )}
-                        </Select>
-                      </FormControl>
-                      
-                    </div>
-                    <div>
-                      <FormControl fullWidth>
-                        <InputLabel id="professorsList">Professors</InputLabel>
-                        <Select
-                          labelId="demo-professorsList"
-                          id="demo-simple-select2"
-                          value={0}
-                          label="Professor"
-                          onLoad={() => getProfessors()}
-                          //onChange={handleChange}
-                        >
-                          {
-                            professors.map((professor) => (
-                              <MenuItem value={professor.id}>{professor.name}</MenuItem>                              
-                            )
-                          )}
-                        </Select>
-                      </FormControl>
-                      
-                    </div> */}
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
 
-                  <Modal key="recordModal" open={addRecord} onClose={() => setAddRecord(false)}>
-                    <AddRecordModal
-                      handleClose={() => setAddRecord(false)}
-                      handleUpload={addRecordCallback}
-                      userAddress={searchUserAddress}
-                      subjectName={subjectName}
-                      subjectValue={subjectValue}
-                    />
-                  </Modal>
-
-                  <Typography variant='h4'>User Records</Typography>
+                  <Typography variant='h4'>Student Grades</Typography>
                   <Box display='flex' alignItems='center' my={1}>
                     <FormControl fullWidth>
                       <TextField
@@ -597,14 +520,11 @@ const Admin = () => {
                         <SearchRoundedIcon style={{ color: 'white' }} />
                       </CustomButton>
                     </Box>
-                    <CustomButton text={'New Record'} handleClick={() => setAddRecord(true)} disabled={!userExist}>
-                      <CloudUploadRoundedIcon style={{ color: 'white' }} />
-                    </CustomButton>
                   </Box>
 
                   {userExist && grades.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
-                      <Typography variant='h5'>No records found</Typography>
+                      <Typography variant='h5'>No grades found</Typography>
                     </Box>
                   )}
 

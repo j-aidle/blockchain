@@ -102,7 +102,7 @@ const Home = () => {
         <Box id='home-page-box' display='flex' flexDirection='column' justifyContent='center' alignItems='center' p={5}>
           <Box mt={2} mb={5}>
             <Typography variant='h2' color='white'>
-              Your Record
+              Your Grades
             </Typography>
           </Box>
           <ActionSection />
