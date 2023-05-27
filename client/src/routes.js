@@ -32,7 +32,7 @@ const routes = [
         ),
       },
       {
-        path: 'user',
+        path: 'student',
         element: (
           <>
             <HeaderBar />

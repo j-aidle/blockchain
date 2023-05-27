@@ -249,9 +249,6 @@ const UserSubjectsModal = ({
           {subjectsOfStudent.length > 0 && (
             <Box display="flex" justifyContent="space-between" mb={2}>
               <Box flexGrow={1} />
-              <CustomButton text="user" handleClick={() => console.log('user', users.user.id)} />
-              <CustomButton text="sof" handleClick={() => console.log('subjectsOfStudent', subjectsOfStudent)} />
-              <CustomButton text="ss" handleClick={() => console.log('studentSubjects', studentSubjects)} />
               <CustomButton text="Save" handleClick={saveSubjects} />
             </Box>
           )}

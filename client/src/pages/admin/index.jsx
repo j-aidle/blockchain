@@ -204,6 +204,16 @@ const Admin = () => {
   }
 
   const registerUser = async (addUserAddress,addUserName) => {
+    let dupl = false
+    for(let i=0; i < users.length; i++) {
+      if(users[i].id === addUserAddress){
+        dupl = true
+      }
+    }
+    if(dupl){
+      setAlert('Duplicated student', 'error')
+      return
+    }
     try {
       console.log(addUserAddress)
       await contract.methods.addUser(addUserAddress,addUserName).send({ from: accounts[0] })
@@ -321,63 +331,49 @@ const Admin = () => {
                   </Box>
 
                   <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
-                    <Typography variant='h4'>Register Student</Typography>
-                    <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
-                      <AddUserModal
-                        handleCloseUser={() => setAddUserRecord(false)}
-                        handleUploadUser={registerUser}
-                        addUserAddress={addUserAddress}
-                        addUserName={addUserName}
+                    <Typography variant='h4'>Add Subject</Typography>
+                    <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
+                      <AddSubjectModal
+                        handleCloseSubject={() => setAddSubjectRecord(false)}
+                        handleUploadSubject={registerSubject}
+                        addSubjectName={addSubjectName}
                       />
                     </Modal>
-                    <CustomButton text={'New Student'} handleClick={() => setAddUserRecord(true)}>
+                    <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
                       <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
                   </Box>
 
-                  {users.length === 0 && (
+                  {subjects.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
-                      <Typography variant='h5'>No Students found</Typography>
+                      <Typography variant='h5'>No Subjects found</Typography>
                     </Box>
                   )}
 
-                  {users.length > 0 && (
+                  {subjects.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="users table">
+                        <Table sx={{ minWidth: 650 }} aria-label="subjects table">
                           <TableHead>
                             <TableRow>
-                              <TableCell>Student Name</TableCell>
+                              <TableCell>Subject Name</TableCell>
+                              <TableCell></TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {users.map((user) => (
+                            {subjects.map((sub) => (
                               <TableRow
-                                key={user.id}
+                                key={sub.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                               >
                                 <TableCell component="th" scope="row">
-                                  {user.name}
+                                  {sub.name}
                                 </TableCell>
-                                <TableCell component="th" scope="row">
-                                  <CustomButton text={'Enrollment'} handleClick={() => showModalUsersSubjects({user})}/>
-                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
                       </TableContainer>
-                      <Modal key={'modal'-selectedUser.id} open={addUserSubjectRecord} onClose={() => setAddUserSubjectRecord(false)}>
-                        <UserSubjectsModal
-                          destroyOnClose
-                          handleCloseUserSubject={() => setAddUserSubjectRecord(false)}
-                          users={selectedUser}
-                          professorsSubjects={professorsSubjects}
-                          professors={professors}
-                          subjects={subjects}
-                          subjectsOfStudent={studentList}
-                        />
-                      </Modal>
                     </Box>
                   )}
 
@@ -451,53 +447,68 @@ const Admin = () => {
                     <Divider />
                   </Box>
 
+
                   <Box display='flex' alignItems='center' justifyContent='space-between' my={5}>
-                    <Typography variant='h4'>Add Subject</Typography>
-                    <Modal key="subjectModal" open={addSubjectRecord} onClose={() => setAddSubjectRecord(false)}>
-                      <AddSubjectModal
-                        handleCloseSubject={() => setAddSubjectRecord(false)}
-                        handleUploadSubject={registerSubject}
-                        addSubjectName={addSubjectName}
+                    <Typography variant='h4'>Register Student</Typography>
+                    <Modal open={addUserRecord} onClose={() => setAddUserRecord(false)}>
+                      <AddUserModal
+                        handleCloseUser={() => setAddUserRecord(false)}
+                        handleUploadUser={registerUser}
+                        addUserAddress={addUserAddress}
+                        addUserName={addUserName}
                       />
                     </Modal>
-                    <CustomButton text={'New Subject'} handleClick={() => setAddSubjectRecord(true)}>
+                    <CustomButton text={'New Student'} handleClick={() => setAddUserRecord(true)}>
                       <PersonAddAlt1RoundedIcon style={{ color: 'white' }} />
                     </CustomButton>
                   </Box>
 
-                  {subjects.length === 0 && (
+                  {users.length === 0 && (
                     <Box display='flex' alignItems='center' justifyContent='center' my={5}>
-                      <Typography variant='h5'>No Subjects found</Typography>
+                      <Typography variant='h5'>No Students found</Typography>
                     </Box>
                   )}
 
-                  {subjects.length > 0 && (
+                  {users.length > 0 && (
                     <Box display='flex' flexDirection='column' mt={3} mb={-2}>
                       <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="subjects table">
+                        <Table sx={{ minWidth: 650 }} aria-label="users table">
                           <TableHead>
                             <TableRow>
-                              <TableCell>Subject Name</TableCell>
-                              <TableCell></TableCell>
+                              <TableCell>Student Name</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {subjects.map((sub) => (
+                            {users.map((user) => (
                               <TableRow
-                                key={sub.id}
+                                key={user.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                               >
                                 <TableCell component="th" scope="row">
-                                  {sub.name}
+                                  {user.name}
                                 </TableCell>
+                                <TableCell component="th" scope="row">
+                                  <CustomButton text={'Enrollment'} handleClick={() => showModalUsersSubjects({user})}/>
+                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
                       </TableContainer>
+                      <Modal key={'modal'-selectedUser.id} open={addUserSubjectRecord} onClose={() => setAddUserSubjectRecord(false)}>
+                        <UserSubjectsModal
+                          destroyOnClose
+                          handleCloseUserSubject={() => setAddUserSubjectRecord(false)}
+                          users={selectedUser}
+                          professorsSubjects={professorsSubjects}
+                          professors={professors}
+                          subjects={subjects}
+                          subjectsOfStudent={studentList}
+                        />
+                      </Modal>
                     </Box>
                   )}
-
+                  
                   <Box mt={6} mb={4}>
                     <Divider />
                   </Box>
@@ -572,7 +583,7 @@ const Admin = () => {
       
                 </>
               )}
-              {(role === 'user' || role === 'professor') && (
+              {(role === 'student' || role === 'professor') && (
                 <Box display='flex' justifyContent='center'>
                   <Typography variant='h5'>Only Admin can access this page</Typography>
                 </Box>

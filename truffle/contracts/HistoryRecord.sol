@@ -12,15 +12,7 @@ contract HistoryRecord {
   address[] professorsList;
   address[] usersList;
 
-  struct Record{
-    uint id;
-    string subjectName;
-    uint subjectValue; 
-    address userId;
-    address adminId;
-    uint256 momentAddition;
-  }  
-      
+     
   struct Admin {
       address id;
   }
@@ -28,9 +20,6 @@ contract HistoryRecord {
   struct User {
       address id;
       string name;
-      string surname;
-      uint age;
-      Record[] records;
   }
 
   struct Professor {
@@ -51,11 +40,6 @@ contract HistoryRecord {
     uint256 momentAddition;
   }
 
-  /*struct ProfessorsStudents {
-    //uint id;
-    address professorId;
-    address studentId;
-  }*/
   struct ProfessorsSubjects {
     //uint id;
     address professorId;
@@ -77,9 +61,8 @@ contract HistoryRecord {
   Grades[] grades;
   ProfessorsSubjects[] professorsSubjects;
   StudentsSubjects[] studentsSubjects;
-  //mapping (uint => ProfessorsStudents) public professorsStudents;
-  //mapping (uint => ProfessorsSubjects) public professorsSubjects;
-  //mapping (uint => StudentsSubjects) public studentsSubjects;
+
+  // events
 
   event AdminAdded(address adminId);
   event UserAdded(address userId);
@@ -93,11 +76,6 @@ contract HistoryRecord {
   event GradeAdded(uint _studentSubjectsId, string _description, uint _value);
   
   // modifiers
-
-  modifier senderExists {
-    require(admins[msg.sender].id == msg.sender || users[msg.sender].id == msg.sender, "Sender does not exist");
-    _;
-  }
 
   modifier userExists(address userId) {
     require(users[userId].id == userId, "User does not exist");
@@ -166,12 +144,14 @@ contract HistoryRecord {
   }
 
   function addUser(address _userId, string memory _nameUser) public senderIsAdmin {
-    require(users[_userId].id != _userId, "This user already exists.");
-    users[_userId].id = _userId;
-    users[_userId].name = _nameUser;
-    usersList.push(_userId);
-    countUsers++;
-    emit UserAdded(_userId);
+    if(!duplicatedUser(_userId)){
+      require(users[_userId].id != _userId, "This user already exists.");
+      users[_userId].id = _userId;
+      users[_userId].name = _nameUser;
+      usersList.push(_userId);
+      countUsers++;
+      emit UserAdded(_userId);
+    }
   }
   
   function getUsers() public view returns(User[] memory) {
@@ -182,6 +162,16 @@ contract HistoryRecord {
     }
     return us;
   }
+
+  function duplicatedUser(address _userId) public view returns (bool) {
+    for(uint i=0; i < usersList.length; i++) {
+      if(keccak256(abi.encodePacked(users[usersList[i]].id)) == keccak256(abi.encodePacked(_userId))){
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   function addProfessor(address _profId, string memory _nameProfessor) public {
     if(!duplicatedProfessor(_profId)){
@@ -248,27 +238,11 @@ contract HistoryRecord {
       return sub;
   }
 
-  /*function getStudentsOfProfessor(address _professorId, uint _subjectId) public view returns(User[] memory) {
-    User[] memory us = new User[](countUsers);
-    return us;
-  }*/
-  
-  function addRecord(string memory _subjectName,uint _subjectValue, address _userId) public senderIsAdmin userExists(_userId) {
-    Record memory record = Record(getCountRecords(_userId),_subjectName, _subjectValue, _userId, msg.sender, block.timestamp);
-    users[_userId].records.push(record);
-
-    emit RecordAdded(_subjectName, _subjectValue, _userId, msg.sender);
-  } 
-
-  function getRecords(address _userId) public view senderExists userExists(_userId) returns (Record[] memory) {
-      return users[_userId].records;
-  } 
-
   function getSenderRole() public view returns (string memory) {
     if (admins[msg.sender].id == msg.sender) {
       return "admin";
     } else if (users[msg.sender].id == msg.sender) {
-      return "user";
+      return "student";
     } else if (professors[msg.sender].id == msg.sender) {
       return "professor";
     } else {
@@ -279,10 +253,5 @@ contract HistoryRecord {
   function getUserExists(address _userId) public view senderIsAdmin returns (bool) {
     return users[_userId].id == _userId;
   }
-
-  function getCountRecords(address _userId) public view returns(uint count) {
-      return users[_userId].records.length;
-  }
-
 
 }

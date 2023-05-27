@@ -313,7 +313,7 @@ const showStudentsSubjects = (s) => {
                   </Typography>
                 </Box>
               )}
-              {(role === "admin" || role === "user") && (
+              {(role === "admin" || role === "student") && (
                 <Box display="flex" justifyContent="center">
                   <Typography variant="h5">
                     Only professor can access this page

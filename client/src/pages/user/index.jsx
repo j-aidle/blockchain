@@ -115,9 +115,9 @@ const User = () => {
                   </Typography>
                 </Box>
               )}
-              {role === "user" && (
+              {role === "student" && (
                 <>
-                  <Typography variant="h4">My Records</Typography>
+                  <Typography variant="h4">My Grades</Typography>
 
                   {gradesList.length === 0 && (
                     <Box
@@ -126,7 +126,7 @@ const User = () => {
                       justifyContent="center"
                       my={5}
                     >
-                      <Typography variant="h5">No records found</Typography>
+                      <Typography variant="h5">No grades found</Typography>
                     </Box>
                   )}
 

@@ -53,9 +53,9 @@ const Home = () => {
             <LoginRoundedIcon style={{ color: 'white' }} />
           </CustomButton>
         )
-      } else if (role === 'user') {
+      } else if (role === 'student') {
         return (
-          <CustomButton text='User Page' handleClick={() => navigate('/user')}>
+          <CustomButton text='Student Page' handleClick={() => navigate('/student')}>
             <LoginRoundedIcon style={{ color: 'white' }} />
           </CustomButton>
         )
