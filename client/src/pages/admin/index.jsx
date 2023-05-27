@@ -40,14 +40,9 @@ const Admin = () => {
   const [addSubjectRecord, setAddSubjectRecord] = useState(false)
   const [addSubjectName] = useState('')
   const [subjects, setSubjects] = useState([])
-  const [subjectList, setSubjectList]= useState(false)
   const [professors, setProfessors] = useState([])
   const [professorList, setProfessorList]= useState([])
-  const [subjectName, setSubjectName] = useState('')
-  const [subjectValue, setSubjectValue] = useState('')
   const [addProfessorSubjectRecord, setAddProfessorSubjectRecord]= useState(false)
-  const [selected,setSelected] = useState([])
-  const [selectedSubjectsOfStudent,setSelectedSubjectsOfStudent] = useState([])
   const [professorsSubjects, setProfessorsSubjects] = useState([])
   const [selectedProfessor, setSelectedProfessor] =useState('');
   const [selectedUser, setSelectedUser] =useState('');
@@ -125,16 +120,7 @@ const Admin = () => {
     subjectsOfStudent(record);
   };
   
-  const getSelected = async () => {
-  console.log('hola',professorsSubjects)
-    for (let i = 0; i < professorsSubjects.length; i++) {
-      console.log('sub id',professorsSubjects[i].subjectId)
-      selected.push(professorsSubjects[i].subjectId)      
-    }
-    return selected
-    console.log('getselect',selected)
-  }
-  
+ 
   const getProfessorSubjects = async () => {
     try {
       const ps = await contract.methods.getProfessorSubjects().call({ from: accounts[0] })
@@ -204,7 +190,12 @@ const Admin = () => {
   }
 
   const registerUser = async (addUserAddress,addUserName) => {
+    if(accounts[0] === addUserAddress){
+      setAlert('You cannot register a student with the admin address', 'error')
+      return
+    }
     let dupl = false
+    let prof = false
     for(let i=0; i < users.length; i++) {
       if(users[i].id === addUserAddress){
         dupl = true
@@ -212,6 +203,15 @@ const Admin = () => {
     }
     if(dupl){
       setAlert('Duplicated student', 'error')
+      return
+    }
+    for(let i=0; i < professors.length; i++) {
+      if(professors[i].id === addUserAddress){
+        prof = true
+      }
+    }
+    if(prof){
+      setAlert('A professor with this address already exists', 'error')
       return
     }
     try {
@@ -224,7 +224,12 @@ const Admin = () => {
   }
 
   const registerProfessor = async (addProfessorAddress,addProfessorName) => {
+    if(accounts[0] === addProfessorAddress){
+      setAlert('You cannot register a professor with the admin address', 'error')
+      return
+    }
     let dupl = false
+    let us = false
     for(let i=0; i < professors.length; i++) {
       if(professors[i].id === addProfessorAddress){
         dupl = true
@@ -232,6 +237,15 @@ const Admin = () => {
     }
     if(dupl){
       setAlert('Duplicated professor', 'error')
+      return
+    }
+    for(let i=0; i < users.length; i++) {
+      if(users[i].id === addProfessorAddress){
+        us = true
+      }
+    }
+    if(us){
+      setAlert('A student with this address already exists', 'error')
       return
     }
     try {
