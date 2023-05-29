@@ -67,7 +67,7 @@ const Professor = () => {
 
     //gradesOfStudent();
 
-   // studentsOfProfessor();
+    // studentsOfProfessor();
     // setSubjects(JSON.parse(window.localStorage.getItem('subjects')));
   });
   /*useEffect(() => {
@@ -75,21 +75,21 @@ const Professor = () => {
     window.localStorage.setItem('subjects', subjects);
   }, [accounts,subjects]);
 */
-const showProfessorsSubjects = (ps) => {
-  setSelectedSubject(ps);
-  console.log(ps)
-  openList[ps.subjectId].open = !openList[ps.subjectId].open;
-  console.log(ps)
-  setOpen(!open);
-};
+  const showProfessorsSubjects = (ps) => {
+    setSelectedSubject(ps);
+    console.log(ps);
+    openList[ps.subjectId].open = !openList[ps.subjectId].open;
+    console.log(ps);
+    setOpen(!open);
+  };
 
-const showStudentsSubjects = (s) => {
-  setSelectedStudent(s);
-  console.log(s)
-  openList2[s.id].open2 = !openList2[s.id].open2;
-  console.log(s)
-  setOpen2(!open2);
-}; 
+  const showStudentsSubjects = (s) => {
+    setSelectedStudent(s);
+    console.log(s);
+    openList2[s.id].open2 = !openList2[s.id].open2;
+    console.log(s);
+    setOpen2(!open2);
+  };
   const getUsers = async () => {
     try {
       const us = await contract.methods.getUsers().call({ from: accounts[0] });
@@ -121,35 +121,37 @@ const showStudentsSubjects = (s) => {
     }
   };
 
-  const loadOpenList = async () =>  {
+  const loadOpenList = async () => {
     try {
       const ps = await contract.methods
         .getProfessorSubjects()
         .call({ from: accounts[0] });
-    for (let i = 0; i < ps.length; i++) { 
-      if (ps[i].professorId === accounts[0]) {
-        openList.push({subjectId: ps[i].subjectId, open: false})
+      for (let i = 0; i < ps.length; i++) {
+        if (ps[i].professorId === accounts[0]) {
+          openList.push({ subjectId: ps[i].subjectId, open: false });
+        }
       }
+      setOpenList(openList);
+    } catch (err) {
+      console.log(err);
     }
-    } catch(err) {
-      console.log(err)
-    }
-  }
+  };
 
   const loadOpenList2 = async () => {
     try {
       const ss = await contract.methods
         .getStudentSubjects()
         .call({ from: accounts[0] });
-    for (let i = 0; i < ss.length; i++) { 
-      if (ss[i].professorId === accounts[0]) {
-        openList2.push({id: ss[i].id, open2: false})
+      for (let i = 0; i < ss.length; i++) {
+        if (ss[i].professorId === accounts[0]) {
+          openList2.push({ id: ss[i].id, open2: false });
+        }
       }
+      setOpenList2(openList2);
+    } catch (err) {
+      console.log(err);
     }
-    } catch(err) {
-      console.log(err)
-    }
-  }
+  };
 
   const subjectsOfProfessor = async () => {
     try {
@@ -165,35 +167,37 @@ const showStudentsSubjects = (s) => {
       let variable2;
       for (let i = 0; i < ps.length; i++) {
         if (ps[i].professorId === accounts[0]) {
-           variable = arr.push({subjectId: ps[i].subjectId, students: [] });
-            for (let j = 0; j < ss.length; j++) {
-              if (ss[j].professorId === accounts[0] && ps[i].subjectId === ss[j].subjectId) {
-                variable2 = arr[variable-1].students.push({
-                  id: ss[j].id,
-                  professorId: ss[j].professorId,
-                  subjectId: ss[j].subjectId,
-                  studentId: ss[j].studentId,
-                  grades: [],
-                })
-                for (let k = 0; k < g.length; k++) {
-                  if (ss[j].id == g[k].studentSubjectsId) {
-                    //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
-                    arr[variable-1].students[variable2-1].grades.push({
-                        id: ss[j].id,
-                        professorId: ss[j].professorId,
-                        subjectId: ss[j].subjectId,
-                        studentId: ss[j].studentId,
-                        description: g[k].description,
-                        value: g[k].value,
-                        time: g[k].momentAddition,
-                    });
-                  }
+          variable = arr.push({ subjectId: ps[i].subjectId, students: [] });
+          for (let j = 0; j < ss.length; j++) {
+            if (
+              ss[j].professorId === accounts[0] &&
+              ps[i].subjectId === ss[j].subjectId
+            ) {
+              variable2 = arr[variable - 1].students.push({
+                id: ss[j].id,
+                professorId: ss[j].professorId,
+                subjectId: ss[j].subjectId,
+                studentId: ss[j].studentId,
+                grades: [],
+              });
+              for (let k = 0; k < g.length; k++) {
+                if (ss[j].id === g[k].studentSubjectsId) {
+                  //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
+                  arr[variable - 1].students[variable2 - 1].grades.push({
+                    id: ss[j].id,
+                    professorId: ss[j].professorId,
+                    subjectId: ss[j].subjectId,
+                    studentId: ss[j].studentId,
+                    description: g[k].description,
+                    value: g[k].value,
+                    time: g[k].momentAddition,
+                  });
                 }
-                
-                //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
               }
 
-        }
+              //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
+            }
+          }
         }
       }
 
@@ -211,43 +215,38 @@ const showStudentsSubjects = (s) => {
 
   const updateGrades = async (std) => {
     try {
-    let arr =  subjectsProfessorList;
-    const g = await contract.methods.getGrades().call({ from: accounts[0] });
-    for (let i = 0; i < arr.length; i++) {
-          if (std.subjectId === arr[i].subjectId) {
-            for (let k = 0; k <  arr[i].students.length; k++) {
-              if ( arr[i].students[k].id == std.id) {
-                //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
-                arr[i].students[k].grades = [];
-                for (let j = 0; j < g.length; j++) {
-                  if (g[j].id === arr[i].students[k].id) {
-                    arr[i].students[k].grades.push({
-                      id:arr[i].students[k].id,
-                      professorId: arr[i].students[k].professorId,
-                      subjectId: arr[i].students[k].subjectId,
-                      studentId: arr[i].students[k].studentId,
-                      description: g[k].description,
-                      value: g[k].value,
-                      time: g[k].momentAddition,
+      let arr = subjectsProfessorList;
+      const g = await contract.methods.getGrades().call({ from: accounts[0] });
+      for (let i = 0; i < arr.length; i++) {
+        if (std.subjectId === arr[i].subjectId) {
+          for (let k = 0; k < arr[i].students.length; k++) {
+            if (arr[i].students[k].id == std.id) {
+              //arr.push({ id: ss[k].id, professorId: ss[k].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId, description: g[j].description, value: g[j].value, time: g[j].momentAddition  });
+              arr[i].students[k].grades = [];
+              for (let j = 0; j < g.length; j++) {
+                if (g[j].id === arr[i].students[k].id) {
+                  arr[i].students[k].grades.push({
+                    id: arr[i].students[k].id,
+                    professorId: arr[i].students[k].professorId,
+                    subjectId: arr[i].students[k].subjectId,
+                    studentId: arr[i].students[k].studentId,
+                    description: g[k].description,
+                    value: g[k].value,
+                    time: g[k].momentAddition,
                   });
-                  }
-                  
                 }
               }
             }
-            
-            //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
           }
 
+          //arr.push({ id: ss[k].id, professorId: ss[i].professorId, subjectId: ss[k].subjectId, studentId: ss[i].studentId });
+        }
+      }
+      setSubjectsProfessorList(arr);
+    } catch (err) {
+      console.error(err);
     }
-    setSubjectsProfessorList(arr);
-
-} catch (err) {
-  console.error(err);
-}
-
-  }
-
+  };
 
   const getSubjects = async () => {
     try {
@@ -352,11 +351,10 @@ const showStudentsSubjects = (s) => {
                                 </Typography>
                               </TableCell>
                             </TableRow>
-                            
                           </TableHead>
-                          
+
                           {subjectsProfessorList.map((ps) => (
-                                                        <>
+                            <>
                               <TableRow
                                 //key={ps}
                                 sx={{ "& > *": { borderBottom: "unset" } }}
@@ -366,7 +364,9 @@ const showStudentsSubjects = (s) => {
                                     aria-label="expand row"
                                     size="small"
                                     //onClick={() => setOpen(!open)}
-                                    onClick={() => {showProfessorsSubjects(ps)}}
+                                    onClick={() => {
+                                      showProfessorsSubjects(ps);
+                                    }}
                                   >
                                     {openList[ps.subjectId].open ? (
                                       <KeyboardArrowUpIcon />
@@ -449,9 +449,14 @@ const showStudentsSubjects = (s) => {
                                                       aria-label="expand row2"
                                                       size="small"
                                                       //onClick={() => setOpen2(!open2)}
-                                                      onClick={() => showStudentsSubjects(std)}
+                                                      onClick={() =>
+                                                        showStudentsSubjects(
+                                                          std
+                                                        )
+                                                      }
                                                     >
-                                                      {openList2[std.id].open2 ? (
+                                                      {openList2[std.id]
+                                                        .open2 ? (
                                                         <KeyboardArrowUpIcon />
                                                       ) : (
                                                         <KeyboardArrowDownIcon />

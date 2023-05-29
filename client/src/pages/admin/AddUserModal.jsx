@@ -44,7 +44,7 @@ const AddUserModal = ({ handleCloseUser, handleUploadUser }) => {
                           <FormControl fullWidth>
                               <TextField
                                   variant='outlined'
-                                  placeholder='Address of the User'
+                                  placeholder='Address of the Student'
                                   value={addUserAddress}
                                   onChange={e => setUserAddress(e.target.value)}
                                   InputProps={{ style: { fontSize: '15px' } }}
@@ -52,7 +52,7 @@ const AddUserModal = ({ handleCloseUser, handleUploadUser }) => {
                                   size='small' />
                               <TextField
                                   variant='outlined'
-                                  placeholder='Name of the User'
+                                  placeholder='Name of the Student'
                                   value={addUserName}
                                   onChange={e => setUserName(e.target.value)}
                                   InputProps={{ style: { fontSize: '15px' } }}

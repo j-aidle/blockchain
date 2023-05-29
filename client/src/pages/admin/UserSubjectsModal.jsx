@@ -80,7 +80,7 @@ const UserSubjectsModal = ({
           }
         }
         console.log(found);
-        if (subjectsOfStudent[k].selected === true && !found) {
+        if (subjectsOfStudent[k].id === null && subjectsOfStudent[k].selected === true && !found) {
           contract.methods
             .addStudentSubjects(
               users.user.id,

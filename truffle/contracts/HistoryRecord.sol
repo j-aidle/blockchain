@@ -104,10 +104,13 @@ contract HistoryRecord {
   }
 
   function deleteStudentSubjects(uint _id) public {
-    for (uint i = 0; i < studentsSubjects.length; i++) {
+    /*for (uint i = 0; i < studentsSubjects.length; i++) {
       if(studentsSubjects[i].id == _id){
         studentsSubjects[i] = studentsSubjects[studentsSubjects.length -1];
       }
+    }*/
+    for (uint i = _id; i < studentsSubjects.length-1; i++) {
+        studentsSubjects[i] = studentsSubjects[i+1];
     }
     studentsSubjects.pop();
     emit StudentSubjectsDeleted(_id);
@@ -123,10 +126,19 @@ contract HistoryRecord {
   }
 
   function deleteProfessorSubjects(address _professorId, uint _subjectId) public {
+    /*for (uint i =0; i < professorsSubjects.length; i++) {
+      if(professorsSubjects[i].professorId == _professorId && professorsSubjects[i].subjectId == _subjectId) {
+        professorsSubjects[i] = professorsSubjects[professorsSubjects.length -1];
+      }
+    }*/
+    uint found=0; 
     for (uint i =0; i < professorsSubjects.length; i++) {
       if(professorsSubjects[i].professorId == _professorId && professorsSubjects[i].subjectId == _subjectId) {
-        professorsSubjects[i] = professorsSubjects[professorsSubjects.length - 1];
+        found = i;
       }
+    }
+    for (uint i =found; i < professorsSubjects.length-1; i++) {
+        professorsSubjects[i] = professorsSubjects[i+ 1];
     }
     professorsSubjects.pop();
     emit ProfessorSubjectsDeleted(_professorId,_subjectId);
